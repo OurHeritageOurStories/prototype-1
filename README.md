@@ -11,3 +11,8 @@ Notes:
 1 - The python file and the data csv file must be in the same directory. 
 2 - If you re-run the script, you will get duplicate items (i.e. same cotent and title, different Q number)
 3 - The bot works by assuming every new entry in column 1 is a new entitiy (new q number). It will then look at the rest of the row after the new entry in column 1, assuming this is information about this entity. If the subsequent row has an empty cell in column 1, it will assume this row contains further information about the current entitiy, and will continue adding information to the same entity. It will continue this until it encounters a row with an entry in column 1, where it will assume a new entity starts. 
+
+
+## mydata2.csv
+
+mydata2.csv is a csv representation of the data "ai_lab_2.ttl", available at `https://raw.githubusercontent.com/OurHeritageOurStories/ohos-observatory/main/observatory/src/assets/datasets/ai_lab_2.ttl`. This data was loaded into OpenRefine, where the program was used to conver it into a .csv. 
