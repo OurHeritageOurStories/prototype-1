@@ -10,6 +10,9 @@ mydata = pd.read_csv("mydata2.csv")
 for index, row in mydata.iterrows():
     print("index")
     print(index)
+    for item in row:
+        print("item")
+        print(item)
     item_statements = []
     current_title=""
     if index==0: #if we've just started, start building from nothing
@@ -32,6 +35,9 @@ for index, row in mydata.iterrows():
         #first, write the current data
         print("row number")
         print(index)
+        for statement in item_statements:
+            print("statement")
+            print(statement)
         wbPage = wdi_core.WDItemEngine(data=item_statements, mediawiki_api_url="http://localhost:80/w/api.php")
         wbPage.set_label(current_title, lang="en")
         pprint.pprint(wbPage.get_wd_json_representation())
