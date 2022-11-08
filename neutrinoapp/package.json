@@ -1,0 +1,30 @@
+{
+  "name": "neutrinograph",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "webpack-dev-server --mode development --open",
+    "build": "webpack --mode production",
+    "test": "mocha",
+    "lint": "eslint --cache --format codeframe --ext mjs,jsx,js src test"
+  },
+  "dependencies": {
+    "prop-types": "^15",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-hot-loader": "^4",
+    "reagraph": "^4.5.0"
+  },
+  "devDependencies": {
+    "@neutrinojs/mocha": "^9.5.0",
+    "@neutrinojs/react": "^9.5.0",
+    "@neutrinojs/standardjs": "^9.5.0",
+    "eslint": "^7",
+    "mocha": "^8",
+    "neutrino": "^9.5.0",
+    "webpack": "^4",
+    "webpack-cli": "^3",
+    "webpack-dev-server": "^3"
+  }
+}
