@@ -19,7 +19,7 @@ export default function App () {
   }
 
   const getData = async () => {
-    const sparql = 'SELECT ?s ?p ?o  WHERE { ?s ?p ?o .FILTER regex(str(?s), "' + query + '") .} LIMIT 20'
+    const sparql = 'SELECT ?s ?p ?o  WHERE { ?s ?p ?o .FILTER (regex(str(?s), "' + query + '", "i") || regex(str(?p), "' + query + '", "i") || regex(str(?o), "' + query + '", "i")) .} LIMIT 100'
     const url = wdk.sparqlQuery(sparql)
     try {
       const response = await superagent.get(url)
