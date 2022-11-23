@@ -82,7 +82,7 @@ export default function App () {
             {
               displayTNA.map(item =>
                 <tr key=''>
-                  <td>{item.title}</td>
+                  <td>{Parser(item.title.link('https://discovery.nationalarchives.gov.uk/details/r/' + item.id))}</td>
                   <td>{item.reference}</td>
                   <td>{item.coveringDates}</td>
                 </tr>
@@ -103,7 +103,7 @@ export default function App () {
             {
               displayOther.map(item =>
                 <tr key=''>
-                  <td>{item.title}</td>
+                  <td>{Parser(item.title.link('https://discovery.nationalarchives.gov.uk/details/r/' + item.id))}</td>
                   <td>{item.reference}</td>
                   <td>{item.coveringDates}</td>
                 </tr>
