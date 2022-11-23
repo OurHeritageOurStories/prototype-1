@@ -12,7 +12,8 @@ const wdk = WBK({
 
 export default function App () {
   const [query, setQuery] = useState('')
-  const [displayData, setDisplayData] = useState([{ title: '' }])
+  const [displayTNA, setDisplayTNA] = useState([{ title: '' }])
+  const [displayOther, setDisplayOther] = useState([{ title: '' }])
   const [displayWiki, setDisplayWiki] = useState([{ s: '', p: '', o: '' }])
   const [isActive, setIsActive] = useState(false)
 
@@ -33,7 +34,6 @@ export default function App () {
           i.s = i.s.split('/').pop().replaceAll('_', ' ')
         }
         i.p = i.p.split(':').pop().split('/').pop().replaceAll('_', ' ')
-        //i.p = i.p.split('/').pop().replaceAll('_', ' ')
         if (i.o.includes('http') && !i.o.includes('localhost')) {
           i.o = <p>{Parser(i.o.split('/').pop().replaceAll('_', ' ').link(i.o))}</p>
         } else {
@@ -48,9 +48,12 @@ export default function App () {
 
   function search () {
     getData()
-    fetch('https://discovery.nationalarchives.gov.uk/API/search/v1/records?sps.searchQuery=' + query)
+    fetch('https://discovery.nationalarchives.gov.uk/API/search/records?sps.heldByCode=TNA&sps.searchQuery=' + query)
       .then(response => response.json())
-      .then(response => setDisplayData(response.records))
+      .then(response => setDisplayTNA(response.records))
+    fetch('https://discovery.nationalarchives.gov.uk/API/search/records?sps.heldByCode=OTH&sps.searchQuery=' + query)
+      .then(response => response.json())
+      .then(response => setDisplayOther(response.records))
     setIsActive(true)
   }
 
@@ -66,6 +69,7 @@ export default function App () {
       </div>
       <div className='Discovery' style={{ visibility: isActive ? 'visible' : 'hidden' }}>
         <h1>Discovery</h1>
+        <h2>TNA</h2>
         <table className='table'>
           <thead>
             <tr>
@@ -76,7 +80,28 @@ export default function App () {
           </thead>
           <tbody>
             {
-              displayData.map(item =>
+              displayTNA.map(item =>
+                <tr key=''>
+                  <td>{item.title}</td>
+                  <td>{item.reference}</td>
+                  <td>{item.coveringDates}</td>
+                </tr>
+              )
+            }
+          </tbody>
+        </table>
+        <h2>Other Archives</h2>
+        <table className='table'>
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Reference</th>
+              <th>Dates</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              displayOther.map(item =>
                 <tr key=''>
                   <td>{item.title}</td>
                   <td>{item.reference}</td>
