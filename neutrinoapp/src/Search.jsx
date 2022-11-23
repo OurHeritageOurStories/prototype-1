@@ -27,13 +27,14 @@ export default function App () {
       const response = await superagent.get(url)
       var simplifiedResults = WBK.simplify.sparqlResults(response.text)
       for (var i of simplifiedResults) {
-        if (!i.s.includes('localhost')) {
+        if (i.s.includes('http') && !i.s.includes('localhost')) {
           i.s = <p>{Parser(i.s.split('/').pop().replaceAll('_', ' ').link(i.s))}</p>
         } else {
           i.s = i.s.split('/').pop().replaceAll('_', ' ')
         }
-        i.p = i.p.split(':').pop().replaceAll('_', ' ')
-        if (!i.o.includes('localhost')) {
+        i.p = i.p.split(':').pop().split('/').pop().replaceAll('_', ' ')
+        //i.p = i.p.split('/').pop().replaceAll('_', ' ')
+        if (i.o.includes('http') && !i.o.includes('localhost')) {
           i.o = <p>{Parser(i.o.split('/').pop().replaceAll('_', ' ').link(i.o))}</p>
         } else {
           i.o = i.o.split('/').pop().replaceAll('_', ' ')
