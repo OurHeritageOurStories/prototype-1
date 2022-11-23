@@ -1,5 +1,6 @@
 import React from 'react'
 import './App.css'
+import Parser from 'html-react-parser'
 
 const { useState } = React
 const WBK = require('wikibase-sdk')
@@ -24,7 +25,20 @@ export default function App () {
     const url = wdk.sparqlQuery(sparql)
     try {
       const response = await superagent.get(url)
-      const simplifiedResults = WBK.simplify.sparqlResults(response.text)
+      var simplifiedResults = WBK.simplify.sparqlResults(response.text)
+      for (var i of simplifiedResults) {
+        if (!i.s.includes('localhost')) {
+          i.s = <p>{Parser(i.s.split('/').pop().replaceAll('_', ' ').link(i.s))}</p>
+        } else {
+          i.s = i.s.split('/').pop().replaceAll('_', ' ')
+        }
+        i.p = i.p.split(':').pop().replaceAll('_', ' ')
+        if (!i.o.includes('localhost')) {
+          i.o = <p>{Parser(i.o.split('/').pop().replaceAll('_', ' ').link(i.o))}</p>
+        } else {
+          i.o = i.o.split('/').pop().replaceAll('_', ' ')
+        }
+      }
       setDisplayWiki(simplifiedResults)
     } catch (err) {
       console.log(err)

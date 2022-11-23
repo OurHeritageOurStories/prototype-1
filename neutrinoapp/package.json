@@ -10,11 +10,14 @@
     "lint": "eslint --cache --format codeframe --ext mjs,jsx,js src test"
   },
   "dependencies": {
+    "html-react-parser": "^3.0.4",
     "prop-types": "^15",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hot-loader": "^4",
-    "reagraph": "^4.5.0"
+    "reagraph": "^4.5.0",
+    "superagent": "^8.0.3",
+    "wikibase-sdk": "^8.1.0"
   },
   "devDependencies": {
     "@neutrinojs/mocha": "^9.5.0",
