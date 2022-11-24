@@ -19,3 +19,9 @@ table, th, td {
 a {
   color: rgb(234, 248, 191);
 }
+
+.navbar {
+  position: fixed;
+  top: 1px;
+  left: 1px;
+}
