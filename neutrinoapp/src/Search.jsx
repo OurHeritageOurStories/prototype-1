@@ -55,11 +55,11 @@ export default function App () {
       const urlTexts = wdk.sparqlQuery(sparqlTexts)
       const responseTexts = await superagent.get(urlTexts)
       var simplifiedTextsResults = WBK.simplify.sparqlResults(responseTexts.text)
-      for (var i of simplifiedTextsResults) {
-        if (i.s.indexOf('tanc.manchester.ac.uk') !== -1 && i.s.indexOf('localhost') === -1) {
-          i.s = <p id={i.s.split('/').pop()}>{Parser(i.s.split('/').pop())}</p>
+      for (var j of simplifiedTextsResults) {
+        if (j.s.indexOf('tanc.manchester.ac.uk') !== -1 && j.s.indexOf('localhost') === -1) {
+          j.s = <p id={j.s.split('/').pop()}>{Parser(j.s.split('/').pop())}</p>
         } else {
-          i.s = i.s.split('/').pop().replaceAll('_', ' ')
+          j.s = j.s.split('/').pop().replaceAll('_', ' ')
         }
       }
       setDisplayTexts(simplifiedTextsResults)
@@ -91,7 +91,7 @@ export default function App () {
       </div>
       <div className='Discovery' style={{ visibility: isActive ? 'visible' : 'hidden' }}>
         <h1>Discovery</h1>
-        <h2>TNA</h2>
+        <h2>The National Archives</h2>
         <table className='table'>
           <thead>
             <tr>
@@ -119,6 +119,7 @@ export default function App () {
               <th>Title</th>
               <th>Reference</th>
               <th>Dates</th>
+              <th>Held by</th>
             </tr>
           </thead>
           <tbody>
@@ -128,6 +129,7 @@ export default function App () {
                   <td>{Parser(item.title.link('https://discovery.nationalarchives.gov.uk/details/r/' + item.id))}</td>
                   <td>{item.reference}</td>
                   <td>{item.coveringDates}</td>
+                  <td>{item.heldBy}</td>
                 </tr>
               )
             }
@@ -157,7 +159,7 @@ export default function App () {
         </table>
       </div>
       <div style={{ visibility: isActive ? 'visible' : 'hidden' }}>
-        <h1>Texts</h1>
+        <h2>Texts</h2>
         <table className='table'>
           <tbody>
             {
