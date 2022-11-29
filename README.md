@@ -2,7 +2,7 @@
 
 Please note, this Readme is in a very "Rough and ready" state, and will be updated at various points
 
-## Install
+## Install Wikibase
 
 1. Clone the following repo `https://github.com/wmde/wikibase-release-pipeline/tree/6ab3c2aac2bb5dc95c72ebbe8b2231799acbef35`
 2. In the "example" directory, rename `template.env` to `.env`
@@ -26,3 +26,7 @@ Notes:
 
 mydata2.csv is a csv representation of the data "ai_lab_2.ttl", available at `https://raw.githubusercontent.com/OurHeritageOurStories/ohos-observatory/main/observatory/src/assets/datasets/ai_lab_2.ttl`. This data was loaded into OpenRefine, where the program was used to conver it into a .csv. 
 
+## Running the search page
+
+1. In the main folder, run `node cors`
+2. In the neutrinoapp folder, run `npm start`

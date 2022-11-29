@@ -6,8 +6,8 @@ const { useState } = React
 const WBK = require('wikibase-sdk')
 const superagent = require('superagent')
 const wdk = WBK({
-  instance: 'http://localhost:80',
-  sparqlEndpoint: 'http://localhost:9999/bigdata/namespace/undefined/sparql'
+  instance: 'http://localhost:8080/http://localhost:80',
+  sparqlEndpoint: 'http://localhost:8080/http://localhost:9999/bigdata/namespace/undefined/sparql'
 })
 
 export default function App () {
@@ -23,7 +23,7 @@ export default function App () {
   }
 
   const getData = async () => {
-    const sparql = 'prefix tanc: <http://tanc.manchester.ac.uk/> SELECT  ?s ?p ?o WHERE  { ?s  ?p  ?o FILTER ( ( regex(str(?s), "' + query + '", "i") || regex(str(?p), "' + query + '", "i") ) || regex(str(?o), "' + query + '", "i") ) FILTER ( ?p NOT IN (tanc:text) )}'
+    const sparql = 'prefix tanc: <http://tanc.manchester.ac.uk/> SELECT  ?s ?p ?o WHERE  { ?s  ?p  ?o FILTER ( ( regex(str(?s), "' + query + '", "i") || regex(str(?o), "' + query + '", "i") ) ) FILTER ( ?p NOT IN (tanc:text) )}'
     const url = wdk.sparqlQuery(sparql)
     try {
       const response = await superagent.get(url)
@@ -70,10 +70,10 @@ export default function App () {
 
   function search () {
     getData()
-    fetch('https://discovery.nationalarchives.gov.uk/API/search/records?sps.heldByCode=TNA&sps.searchQuery=' + query)
+    fetch('http://localhost:8080/https://discovery.nationalarchives.gov.uk/API/search/records?sps.heldByCode=TNA&sps.searchQuery=' + query)
       .then(response => response.json())
       .then(response => setDisplayTNA(response.records))
-    fetch('https://discovery.nationalarchives.gov.uk/API/search/records?sps.heldByCode=OTH&sps.searchQuery=' + query)
+    fetch('http://localhost:8080/https://discovery.nationalarchives.gov.uk/API/search/records?sps.heldByCode=OTH&sps.searchQuery=' + query)
       .then(response => response.json())
       .then(response => setDisplayOther(response.records))
     setIsActive(true)
