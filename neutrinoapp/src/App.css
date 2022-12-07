@@ -3,21 +3,36 @@
 }
 
 body {
-  background-color: #282c34;
-  color: white;
   padding: 40px;
   font-family: Arial;
   text-align: center;
 }
 
-table, th, td {
-  border: 1px solid;
-  padding: 10px;
-  margin: 0 auto;
+table{
+  margin-left: auto; 
+  margin-right: auto;
 }
 
-a {
-  color: rgb(234, 248, 191);
+th, td, tr {
+  border-bottom: 1px solid #ddd;
+  text-align: center;
+  padding: 10px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 60%;
+}
+
+tr:hover {
+  background-color: rgba(226, 244, 250, 0.952);
+  overflow: visible;
+}
+
+.extra { 
+  display: none;
+}
+
+td:hover .extra {
+  display: inline-block;
 }
 
 .navbar {

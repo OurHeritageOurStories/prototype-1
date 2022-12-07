@@ -10,7 +10,7 @@ module.exports = {
     standard(),
     react({
       html: {
-        title: 'neutrinograph'
+        title: 'OHOS'
       }
     }),
     mocha(),

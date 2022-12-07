@@ -1280,6 +1280,11 @@
     "suspend-react" "^0.0.8"
     "zustand" "^3.7.1"
 
+"@remix-run/router@1.0.4":
+  "integrity" "sha512-gTL8H5USTAKOyVA4xczzDJnC3HMssdFa3tRlwBicXynx9XfiXwneHnYQogwSKpdCkjXISrEKSTtX62rLpNEVQg=="
+  "resolved" "https://registry.npmjs.org/@remix-run/router/-/router-1.0.4.tgz"
+  "version" "1.0.4"
+
 "@types/glob@^7.1.1":
   "integrity" "sha512-ZUxbzKl0IfJILTS6t7ip5fQQM/J3TJYubDm3nMbgubNNYS62eXeUpoLUC8/7fJNiFYHTrGPQn7hspDUzIHX3UA=="
   "resolved" "https://registry.npmjs.org/@types/glob/-/glob-7.2.0.tgz"
@@ -6344,6 +6349,21 @@
   dependencies:
     "loose-envify" "^1.1.0"
     "scheduler" "^0.21.0"
+
+"react-router-dom@^6.4.4":
+  "integrity" "sha512-0Axverhw5d+4SBhLqLpzPhNkmv7gahUwlUVIOrRLGJ4/uwt30JVajVJXqv2Qr/LCwyvHhQc7YyK1Do8a9Jj7qA=="
+  "resolved" "https://registry.npmjs.org/react-router-dom/-/react-router-dom-6.4.4.tgz"
+  "version" "6.4.4"
+  dependencies:
+    "@remix-run/router" "1.0.4"
+    "react-router" "6.4.4"
+
+"react-router@6.4.4":
+  "integrity" "sha512-SA6tSrUCRfuLWeYsTJDuriRqfFIsrSvuH7SqAJHegx9ZgxadE119rU8oOX/rG5FYEthpdEaEljdjDlnBxvfr+Q=="
+  "resolved" "https://registry.npmjs.org/react-router/-/react-router-6.4.4.tgz"
+  "version" "6.4.4"
+  dependencies:
+    "@remix-run/router" "1.0.4"
 
 "react-use-gesture@^9.1.3":
   "integrity" "sha512-CdqA2SmS/fj3kkS2W8ZU8wjTbVBAIwDWaRprX7OKaj7HlGwBasGEFggmk5qNklknqk9zK/h8D355bEJFTpqEMg=="
