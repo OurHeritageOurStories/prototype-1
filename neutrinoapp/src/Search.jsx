@@ -9,8 +9,8 @@ const { useState } = React
 const WBK = require('wikibase-sdk')
 const superagent = require('superagent')
 const wdk = WBK({
-  instance: 'http://localhost:80',
-  sparqlEndpoint: 'http://localhost:9999/bigdata/namespace/undefined/sparql'
+  instance: 'http://localhost:8080/http://localhost:80',
+  sparqlEndpoint: 'http://localhost:8080/http://localhost:9999/bigdata/namespace/undefined/sparql'
 })
 
 export default function Search() {
@@ -19,13 +19,15 @@ export default function Search() {
   const [displayOther, setDisplayOther] = useState([{ title: '' }])
   const [displayWiki, setDisplayWiki] = useState([{ s: '', p: '', o: '' }])
   const [isActive, setIsActive] = useState(false)
+  const [initQuery, setInitQuery] = useState(false)
 
   const onInputChange = (event) => {
     setQuery(event.target.value)
   }
 
   const getData = async () => {
-    const sparql = 'prefix tanc: <http://tanc.manchester.ac.uk/> SELECT DISTINCT ?o WHERE { ?s tanc:mentions ?o FILTER (regex(str(?o), "' + query + '", "i"))}'
+    setInitQuery(true)
+    const sparql = 'prefix tanc: <http://tanc.manchester.ac.uk/> SELECT DISTINCT ?o (count(?text) as ?count) WHERE { ?s <http://tanc.manchester.ac.uk/text> ?text. ?s tanc:mentions ?o FILTER (regex(str(?o), "' + query + '", "i"))} GROUP BY ?o ORDER BY DESC(?count)'
     const url = wdk.sparqlQuery(sparql)
     try {
       const response = await superagent.get(url)
@@ -38,10 +40,10 @@ export default function Search() {
 
   function search() {
     getData()
-    fetch('https://discovery.nationalarchives.gov.uk/API/search/records?sps.heldByCode=TNA&sps.searchQuery=' + query)
+    fetch('http://localhost:8080/https://discovery.nationalarchives.gov.uk/API/search/records?sps.heldByCode=TNA&sps.searchQuery=' + query)
       .then(response => response.json())
       .then(response => setDisplayTNA(response.records))
-    fetch('https://discovery.nationalarchives.gov.uk/API/search/records?sps.heldByCode=OTH&sps.searchQuery=' + query)
+    fetch('http://localhost:8080/https://discovery.nationalarchives.gov.uk/API/search/records?sps.heldByCode=OTH&sps.searchQuery=' + query)
       .then(response => response.json())
       .then(response => setDisplayOther(response.records))
     setIsActive(true)
@@ -57,6 +59,10 @@ export default function Search() {
     }
   }
 
+  if (initQuery === false) {
+    getData()
+  }
+
   return (
     <div className='App'>
       <div className='Search'>
@@ -67,7 +73,7 @@ export default function Search() {
           <button className='button' type='button' onClick={search}> Search </button>
         </form>
       </div>
-      <div id='OHOS' style={{ visibility: isActive ? 'visible' : 'hidden' }}>
+      <div id='OHOS'>
         <h1>OHOS</h1>
         <table className='table'>
           <tbody>
@@ -77,6 +83,7 @@ export default function Search() {
                   <td><Link to={{
                     pathname: `/${item.o.replaceAll('/', '+€$').replaceAll('.', '+$£')}`
                   }} >{item.o.split('/').pop().replaceAll('_', ' ')}</Link>{ }</td>
+                  <td>{item.count} results</td>
                 </tr>
               )
             }
