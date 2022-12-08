@@ -25,11 +25,7 @@ export default function Search() {
   }
 
   const getData = async () => {
-<<<<<<< Updated upstream
-    const sparql = 'prefix tanc: <http://tanc.manchester.ac.uk/> SELECT  ?s ?p ?o WHERE  { ?s  ?p  ?o FILTER ( ( regex(str(?s), "' + query + '", "i") || regex(str(?p), "' + query + '", "i") ) || regex(str(?o), "' + query + '", "i") ) FILTER ( ?p NOT IN (tanc:text) )}'
-=======
     const sparql = 'prefix tanc: <http://tanc.manchester.ac.uk/> SELECT DISTINCT ?o WHERE { ?s tanc:mentions ?o FILTER (regex(str(?o), "' + query + '", "i"))}'
->>>>>>> Stashed changes
     const url = wdk.sparqlQuery(sparql)
     try {
       const response = await superagent.get(url)
@@ -79,7 +75,7 @@ export default function Search() {
               displayWiki.map(item =>
                 <tr key=''>
                   <td><Link to={{
-                    pathname: `/${encodeURIComponent(item.o, "UTF-8")}`
+                    pathname: `/${item.o.replaceAll('/', '+€$').replaceAll('.', '+$£')}`
                   }} >{item.o.split('/').pop().replaceAll('_', ' ')}</Link>{ }</td>
                 </tr>
               )
