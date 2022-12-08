@@ -2,24 +2,24 @@ import React from 'react'
 import {
   BrowserRouter as Router,
   Route,
-  Routes,
-} from "react-router-dom"
+  Routes
+} from 'react-router-dom'
 import Search from './Search'
 import Result from './Result'
 
-export default function App() {
+export default function App () {
   return (
-    <Router basename="/">
+    <Router basename='/'>
       <Routes>
         <Route
-          path="/"
+          path='/'
           element={<Search />}
         />
         <Route
-          path="/:id"
+          path='/:id'
           element={<Result />}
         />
       </Routes>
     </Router>
-  );
+  )
 }

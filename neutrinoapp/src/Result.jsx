@@ -17,7 +17,7 @@ const wdk = WBK({
 export default function Result() {
   const [displayWiki, setDisplayWiki] = useState([{ s: '', p: '', o: '' }])
   var { id } = useParams()
-  var id = id.replaceAll('+€$', '/').replaceAll('+£$', '.')
+  var id = id.replaceAll('+€$', '/').replaceAll('+$£', '.')
   const [isActive, setIsActive] = useState(false)
 
   const getData = async () => {
