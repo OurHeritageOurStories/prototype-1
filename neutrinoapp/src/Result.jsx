@@ -16,9 +16,11 @@ const wdk = WBK({
 
 export default function Result() {
   const [displayWiki, setDisplayWiki] = useState([{ s: '', p: '', o: '' }])
+  const [displayNumber, setDisplayNumber] = useState([{ count: '??' }])
   var { id } = useParams()
   var id = id.replaceAll('+€$', '/').replaceAll('+$£', '.')
   const [isActive, setIsActive] = useState(false)
+  const [isNumber, setIsNumber] = useState(false)
 
   const getData = async () => {
     const sparql = 'SELECT DISTINCT ?o WHERE { ?s <http://tanc.manchester.ac.uk/text> ?o. ?s <http://tanc.manchester.ac.uk/mentions> <' + id + '>.}'
@@ -32,14 +34,32 @@ export default function Result() {
       console.log(err)
     }
   }
+
+  const getNumber = async () => {
+    const sparql = 'SELECT (count(?o) as ?count) WHERE { ?s <http://tanc.manchester.ac.uk/text> ?o. ?s <http://tanc.manchester.ac.uk/mentions> <' + id + '>.}'
+    const url = wdk.sparqlQuery(sparql)
+    try {
+      const response = await superagent.get(url)
+      var simplifiedResults = WBK.simplify.sparqlResults(response.text)
+      setDisplayNumber(simplifiedResults)
+      setIsNumber(true)
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
   if (isActive === false) {
     getData()
   }
 
+  if (isNumber === false) {
+    getNumber()
+  }
+  
   return (
     <div className='App'>
       <div id='OHOS'>
-        <h1>{Parser(id.split('/').pop().replaceAll('_', ' ').link(id))}</h1>
+        <p>{displayNumber.map(item =><h1>{Parser(id.split('/').pop().replaceAll('_', ' ').link(id))}({item.count} results)</h1>)}</p>
         <table className='table'>
           <tbody>
             {
