@@ -15,7 +15,7 @@ const wdk = WBK({
 })
 
 export default function Result() {
-  const [displayWiki, setDisplayWiki] = useState([{text: '', mentioneds: ''}])
+  const [displayWiki, setDisplayWiki] = useState([{ text: '', m: '' }])
   const [displayNumber, setDisplayNumber] = useState([{ count: '??' }])
   var { id } = useParams()
   var id = id.replaceAll('+€$', '/').replaceAll('+$£', '.')
@@ -24,11 +24,20 @@ export default function Result() {
 
   const getData = async () => {
     setIsActive(true)
-    const sparql = 'SELECT DISTINCT ?text (group_concat(?mentioned;separator=" ") as ?mentioneds)  WHERE { ?s <http://tanc.manchester.ac.uk/mentions> ?mentioned. ?s <http://tanc.manchester.ac.uk/text> ?text. ?s <http://tanc.manchester.ac.uk/mentions> <' + id + '>.} GROUP BY ?text'
+    const sparql = 'SELECT DISTINCT ?text (group_concat(?mentioned;separator=" ") as ?m)  WHERE { ?s <http://tanc.manchester.ac.uk/mentions> ?mentioned. ?s <http://tanc.manchester.ac.uk/text> ?text. ?s <http://tanc.manchester.ac.uk/mentions> <' + id + '>.} GROUP BY ?text'
     const url = wdk.sparqlQuery(sparql)
     try {
       const response = await superagent.get(url)
       var simplifiedResults = WBK.simplify.sparqlResults(response.text)
+      for (var i of simplifiedResults) {
+        var words = i.m.split(" ")
+        for (var j = 0; j < words.length; j++) {
+          words[j] = <Link to={{
+            pathname: `/${words[j].replaceAll('/', '+€$').replaceAll('.', '+$£')}`
+          }} >{words[j].split('/').pop().replaceAll('_', ' ')}<br/></Link>
+        }
+        i.m = words
+      }
       setDisplayWiki(simplifiedResults)
     } catch (err) {
       console.log(err)
@@ -55,18 +64,18 @@ export default function Result() {
   if (isNumber === false) {
     getNumber()
   }
-  
+
   return (
     <div className='App'>
       <div id='OHOS'>
-        <div>{displayNumber.map(item =><h1>{Parser(id.split('/').pop().replaceAll('_', ' ').link(id))} ({item.count} results)</h1>)}</div>
+        <div>{displayNumber.map(item => <h1>{Parser(id.split('/').pop().replaceAll('_', ' ').link(id))} ({item.count} results)</h1>)}</div>
         <table className='table'>
           <tbody>
             {
               displayWiki.map(item =>
                 <tr>
                   <td className='widetd'>{item.text.substring(0, 300)}<span className="extra">{item.text.substring(301)}</span></td>
-                  <td className='narrowtd'>{item.mentioneds}</td>
+                  <td className='narrowtd'>{item.m}</td>
                 </tr>
               )
             }
