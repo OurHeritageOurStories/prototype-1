@@ -86,7 +86,7 @@ export default function Result() {
       <div className='navbar'>
       <Link to={{
             pathname: `/`
-          }} >Back to Search</Link>
+          }} >Search</Link>
       </div>
     </div>
   )

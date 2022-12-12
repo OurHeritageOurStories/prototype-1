@@ -74,6 +74,16 @@ export default function Search() {
     }
   }
 
+  function handleKeyPress (event) {
+    if(event.key === 'Enter'){
+      search()
+    }
+  }
+
+  function submitHandler(e) {
+    e.preventDefault()
+  }
+
   if (initQuery === false) {
     getData()
   }
@@ -81,11 +91,11 @@ export default function Search() {
   return (
     <div className='App'>
       <div className='Search'>
-        <form>
+        <form onSubmit={submitHandler}>
           <label>
-            <input type='text' name='query' value={query} onChange={onInputChange} />
+            <input id='searchInput' type='text' onChange={onInputChange} onKeyDown={handleKeyPress} />
           </label>
-          <button className='button' type='button' onClick={search}> Search </button>
+          <button id='searchButton' className='button' type='button' onClick={search}> Search </button>
         </form>
       </div>
       <div id='OHOS'>
