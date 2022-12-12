@@ -27,10 +27,25 @@ export default function Search() {
 
   const getData = async () => {
     setInitQuery(true)
-    const sparql = 'prefix tanc: <http://tanc.manchester.ac.uk/> SELECT DISTINCT ?o (count(?text) as ?count) WHERE { ?s <http://tanc.manchester.ac.uk/text> ?text. ?s tanc:mentions ?o FILTER (regex(str(?o), "' + query + '", "i"))} GROUP BY ?o ORDER BY DESC(?count)'
-    const url = wdk.sparqlQuery(sparql)
+    var sparql_query = query.replaceAll(' ', '_')
+    if (sparql_query.includes('_')) {
+      var sparql_query1 = sparql_query.split('_')[0]
+      var sparql_query2 = sparql_query.split('_')[1]
+      var sparql_query3 = sparql_query.split('_')[2]
+      var sparql_query4 = sparql_query.split('_')[3]
+      if (sparql_query4) {
+        var sparql = 'prefix tanc: <http://tanc.manchester.ac.uk/> SELECT DISTINCT ?o (count(?text) as ?count) WHERE { { ?s <http://tanc.manchester.ac.uk/text> ?text. ?s tanc:mentions ?o FILTER (regex(str(?o), "' + sparql_query1 + '", "i"))} UNION { ?s <http://tanc.manchester.ac.uk/text> ?text. ?s tanc:mentions ?o FILTER (regex(str(?o), "' + sparql_query2 + '", "i"))} UNION { ?s <http://tanc.manchester.ac.uk/text> ?text. ?s tanc:mentions ?o FILTER (regex(str(?o), "' + sparql_query3 + '", "i"))} UNION { ?s <http://tanc.manchester.ac.uk/text> ?text. ?s tanc:mentions ?o FILTER (regex(str(?o), "' + sparql_query4 + '", "i"))} } GROUP BY ?o ORDER BY DESC(?count)'
+      } else if (sparql_query3) {
+        var sparql = 'prefix tanc: <http://tanc.manchester.ac.uk/> SELECT DISTINCT ?o (count(?text) as ?count) WHERE { { ?s <http://tanc.manchester.ac.uk/text> ?text. ?s tanc:mentions ?o FILTER (regex(str(?o), "' + sparql_query1 + '", "i"))} UNION { ?s <http://tanc.manchester.ac.uk/text> ?text. ?s tanc:mentions ?o FILTER (regex(str(?o), "' + sparql_query2 + '", "i"))} UNION { ?s <http://tanc.manchester.ac.uk/text> ?text. ?s tanc:mentions ?o FILTER (regex(str(?o), "' + sparql_query3 + '", "i"))} } GROUP BY ?o ORDER BY DESC(?count)'
+      } else {
+        var sparql = 'prefix tanc: <http://tanc.manchester.ac.uk/> SELECT DISTINCT ?o (count(?text) as ?count) WHERE { { ?s <http://tanc.manchester.ac.uk/text> ?text. ?s tanc:mentions ?o FILTER (regex(str(?o), "' + sparql_query1 + '", "i"))} UNION { ?s <http://tanc.manchester.ac.uk/text> ?text. ?s tanc:mentions ?o FILTER (regex(str(?o), "' + sparql_query2 + '", "i"))} } GROUP BY ?o ORDER BY DESC(?count)'
+      }
+    } else {
+      var sparql = 'prefix tanc: <http://tanc.manchester.ac.uk/> SELECT DISTINCT ?o (count(?text) as ?count) WHERE { ?s <http://tanc.manchester.ac.uk/text> ?text. ?s tanc:mentions ?o FILTER (regex(str(?o), "' + sparql_query + '", "i"))} GROUP BY ?o ORDER BY DESC(?count)'
+    }
+    var url = wdk.sparqlQuery(sparql)
     try {
-      const response = await superagent.get(url)
+      var response = await superagent.get(url)
       var simplifiedResults = WBK.simplify.sparqlResults(response.text)
       setDisplayWiki(simplifiedResults)
     } catch (err) {
@@ -105,7 +120,7 @@ export default function Search() {
             {
               displayTNA.map(item =>
                 <tr key=''>
-                  <td>{Parser(item.title.link('https://discovery.nationalarchives.gov.uk/details/r/' + item.id))}</td>
+                  <td>{Parser(item.title.link('https://discovery.nationalarchives.gov.uk/details/r/' + query))}</td>
                   <td>{item.reference}</td>
                   <td>{item.coveringDates}</td>
                 </tr>
@@ -137,6 +152,7 @@ export default function Search() {
           </tbody>
         </table>
         <br />
+        <h2>{Parser('More from Discovery'.link('https://discovery.nationalarchives.gov.uk/results/r?_q=' + query.replaceAll(' ', '+')))}</h2>
       </div>
       <div className='navbar'>
         <a onClick={() => handleClick(0)} style={{ visibility: isActive ? 'visible' : 'hidden' }}>OHOS</a><br />

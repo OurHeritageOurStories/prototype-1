@@ -73,14 +73,20 @@ export default function Result() {
           <tbody>
             {
               displayWiki.map(item =>
-                <tr>
-                  <td className='widetd'>{item.text.substring(0, 300)}<span className="extra">{item.text.substring(301)}</span></td>
-                  <td className='narrowtd'>{item.m}</td>
+                <tr><div className='preview'>
+                  <td>{item.text}</td>
+                  <td>{item.m}</td>
+                  </div>
                 </tr>
               )
             }
           </tbody>
         </table>
+      </div>
+      <div className='navbar'>
+      <Link to={{
+            pathname: `/`
+          }} >Back to Search</Link>
       </div>
     </div>
   )
