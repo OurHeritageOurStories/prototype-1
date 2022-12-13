@@ -18,7 +18,8 @@ export default function Search () {
   const [displayTNA, setDisplayTNA] = useState([{ title: '' }])
   const [displayOther, setDisplayOther] = useState([{ title: '' }])
   const [displayWiki, setDisplayWiki] = useState([{ s: '', p: '', o: '' }])
-  const [isActive, setIsActive] = useState(false)
+  const [ohosActive, setOhosActive] = useState(false)
+  const [discoveryActive, setDiscoveryActive] = useState(false)
   const [initQuery, setInitQuery] = useState(false)
 
   const onInputChange = (event) => {
@@ -49,6 +50,7 @@ export default function Search () {
       var response = await superagent.get(url)
       var simplifiedResults = WBK.simplify.sparqlResults(response.text)
       setDisplayWiki(simplifiedResults)
+      setOhosActive(true)
     } catch (err) {
       console.log(err)
     }
@@ -62,15 +64,15 @@ export default function Search () {
     fetch('http://localhost:8080/https://discovery.nationalarchives.gov.uk/API/search/records?sps.heldByCode=OTH&sps.searchQuery=' + query)
       .then(response => response.json())
       .then(response => setDisplayOther(response.records))
-    setIsActive(true)
+    setDiscoveryActive(true)
   }
 
   function handleClick (id) {
     const Discovery = document.getElementById('Discovery')
     const OHOS = document.getElementById('OHOS')
-    if (id === 1 && isActive === true) {
+    if (id === 1 && discoveryActive === true) {
       Discovery.scrollIntoView({ behavior: 'smooth' })
-    } else if (id === 0 && isActive === true) {
+    } else if (id === 0 && discoveryActive === true) {
       OHOS.scrollIntoView({ behavior: 'smooth' })
     }
   }
@@ -100,7 +102,7 @@ export default function Search () {
           </button>
         </form>
       </div>
-      <div id='OHOS'>
+      <div id='OHOS' style={{ visibility: ohosActive ? 'visible' : 'hidden' }}>
         <h1>OHOS</h1>
         <table className='table'>
           <tbody>
@@ -122,7 +124,7 @@ export default function Search () {
           </tbody>
         </table>
       </div>
-      <div id='Discovery' className='Discovery' style={{ visibility: isActive ? 'visible' : 'hidden' }}>
+      <div id='Discovery' className='Discovery' style={{ visibility: discoveryActive ? 'visible' : 'hidden' }}>
         <h1>Discovery</h1>
         <h2>The National Archives</h2>
         <table className='table'>
@@ -172,8 +174,8 @@ export default function Search () {
         <h2>{Parser('More from Discovery'.link('https://discovery.nationalarchives.gov.uk/results/r?_q=' + query.replaceAll(' ', '+')))}</h2>
       </div>
       <div className='navbar'>
-        <a onClick={() => handleClick(0)} style={{ visibility: isActive ? 'visible' : 'hidden' }}>OHOS</a><br />
-        <a onClick={() => handleClick(1)} style={{ visibility: isActive ? 'visible' : 'hidden' }}>Discovery</a>
+        <a onClick={() => handleClick(0)} style={{ visibility: discoveryActive ? 'visible' : 'hidden' }}>OHOS</a><br />
+        <a onClick={() => handleClick(1)} style={{ visibility: discoveryActive ? 'visible' : 'hidden' }}>Discovery</a>
       </div>
     </div>
   )
