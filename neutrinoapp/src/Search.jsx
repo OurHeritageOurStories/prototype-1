@@ -54,7 +54,7 @@ export default function Search () {
     }
   }
 
-  function search () {
+  const search = () => {
     getData()
     fetch('http://localhost:8080/https://discovery.nationalarchives.gov.uk/API/search/records?sps.heldByCode=TNA&sps.searchQuery=' + query)
       .then(response => response.json())
