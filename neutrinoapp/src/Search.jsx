@@ -68,12 +68,12 @@ export default function App () {
     }
   }
 
-  function search () {
+  const search = (e) => {
     getData()
-    fetch('https://discovery.nationalarchives.gov.uk/API/search/records?sps.heldByCode=TNA&sps.searchQuery=' + query)
+    fetch('http://localhost:9090/TNA/' + query)
       .then(response => response.json())
       .then(response => setDisplayTNA(response.records))
-    fetch('https://discovery.nationalarchives.gov.uk/API/search/records?sps.heldByCode=OTH&sps.searchQuery=' + query)
+    fetch('http://localhost:9090/OTH/' + query)
       .then(response => response.json())
       .then(response => setDisplayOther(response.records))
     setIsActive(true)
