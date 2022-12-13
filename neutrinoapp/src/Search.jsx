@@ -75,13 +75,13 @@ export default function Search () {
     }
   }
 
-  function handleKeyPress (event) {
-    if(event.key === 'Enter'){
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
       search()
     }
   }
 
-  function submitHandler(e) {
+  const submitHandler = (e) => {
     e.preventDefault()
   }
 
