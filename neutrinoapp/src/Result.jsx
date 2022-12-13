@@ -4,7 +4,7 @@ import Parser from 'html-react-parser'
 import {
   useParams,
   Link
-} from "react-router-dom"
+} from 'react-router-dom'
 
 const { useState } = React
 const WBK = require('wikibase-sdk')
@@ -14,11 +14,11 @@ const wdk = WBK({
   sparqlEndpoint: 'http://localhost:8080/http://localhost:9999/bigdata/namespace/undefined/sparql'
 })
 
-export default function Result() {
+export default function Result () {
   const [displayWiki, setDisplayWiki] = useState([{ text: '', m: '' }])
   const [displayNumber, setDisplayNumber] = useState([{ count: '??' }])
   var { id } = useParams()
-  var id = id.replaceAll('+€$', '/').replaceAll('+$£', '.')
+  id = id.replaceAll('+€$', '/').replaceAll('+$£', '.')
   const [isActive, setIsActive] = useState(false)
   const [isNumber, setIsNumber] = useState(false)
 
@@ -30,11 +30,15 @@ export default function Result() {
       const response = await superagent.get(url)
       var simplifiedResults = WBK.simplify.sparqlResults(response.text)
       for (var i of simplifiedResults) {
-        var words = i.m.split(" ")
+        var words = i.m.split(' ')
         for (var j = 0; j < words.length; j++) {
-          words[j] = <Link to={{
-            pathname: `/${words[j].replaceAll('/', '+€$').replaceAll('.', '+$£')}`
-          }} >{words[j].split('/').pop().replaceAll('_', ' ')}<br/></Link>
+          words[j] =
+            <Link to={{
+              pathname: `/${words[j].replaceAll('/', '+€$').replaceAll('.', '+$£')}`
+            }}
+            >
+              {words[j].split('/').pop().replaceAll('_', ' ')}<br />
+            </Link>
         }
         i.m = words
       }
@@ -68,14 +72,20 @@ export default function Result() {
   return (
     <div className='App'>
       <div id='OHOS'>
-        <div>{displayNumber.map(item => <h1>{Parser(id.split('/').pop().replaceAll('_', ' ').link(id))} ({item.count} results)</h1>)}</div>
+        <div>
+          {displayNumber.map(item =>
+            <h1 key={item.id}>
+              {Parser(id.split('/').pop().replaceAll('_', ' ').link(id))} ({item.count} results)
+            </h1>)}
+        </div>
         <table className='table'>
           <tbody>
             {
               displayWiki.map(item =>
-                <tr><div className='preview'>
-                  <td>{item.text}</td>
-                  <td>{item.m}</td>
+                <tr key={item.id}>
+                  <div className='preview'>
+                    <td>{item.text}</td>
+                    <td>{item.m}</td>
                   </div>
                 </tr>
               )
@@ -84,9 +94,11 @@ export default function Result() {
         </table>
       </div>
       <div className='navbar'>
-      <Link to={{
-            pathname: `/`
-          }} >Back to Search</Link>
+        <Link to={{
+          pathname: '/'
+        }}
+        >Back to Search
+        </Link>
       </div>
     </div>
   )
