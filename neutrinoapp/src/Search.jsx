@@ -3,7 +3,7 @@ import './App.css'
 import Parser from 'html-react-parser'
 import {
   Link
-} from "react-router-dom"
+} from 'react-router-dom'
 
 const { useState } = React
 const WBK = require('wikibase-sdk')
@@ -85,7 +85,8 @@ export default function Search() {
           <label>
             <input type='text' name='query' value={query} onChange={onInputChange} />
           </label>
-          <button className='button' type='button' onClick={search}> Search </button>
+          <button className='button' type='button' onClick={search}> Search 
+          </button>
         </form>
       </div>
       <div id='OHOS'>
@@ -95,9 +96,12 @@ export default function Search() {
             {
               displayWiki.map(item =>
                 <tr key=''>
-                  <td><Link to={{
-                    pathname: `/${item.o.replaceAll('/', '+€$').replaceAll('.', '+$£')}`
-                  }} >{item.o.split('/').pop().replaceAll('_', ' ')}</Link>{ }</td>
+                  <td>
+                    <Link to={{
+                      pathname: `/${item.o.replaceAll('/', '+€$').replaceAll('.', '+$£')}`
+                    }} >{item.o.split('/').pop().replaceAll('_', ' ')}
+                    </Link>{}
+                  </td>
                   <td>{item.count} results</td>
                 </tr>
               )
