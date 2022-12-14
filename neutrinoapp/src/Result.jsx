@@ -71,6 +71,12 @@ export default function Result () {
     getNumber()
   }
 
+  const newPage = () => {
+    setIsReady(false)
+    setIsNumber(false)
+    setIsActive(false)
+  }
+
   return (
     <div className='App'>
       <div id='OHOS'>
@@ -88,7 +94,7 @@ export default function Result () {
                 <tr key={item.id}>
                   <div className='preview'>
                     <td>{item.text}<br /><b>Source</b>: unknown</td>
-                    <td>Mentions:<br />{item.m}</td>
+                    <td onClick={newPage}>Mentions:<br />{item.m}</td>
                   </div>
                 </tr>
               )
