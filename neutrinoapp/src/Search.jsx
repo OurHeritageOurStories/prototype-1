@@ -9,8 +9,8 @@ const { useState } = React
 const WBK = require('wikibase-sdk')
 const superagent = require('superagent')
 const wdk = WBK({
-  instance: 'http://localhost:8080/http://localhost:80',
-  sparqlEndpoint: 'http://localhost:8080/http://localhost:9999/bigdata/namespace/undefined/sparql'
+  instance: 'http://localhost:80',
+  sparqlEndpoint: 'http://localhost:9999/bigdata/namespace/undefined/sparql'
 })
 
 export default function Search () {
@@ -56,12 +56,12 @@ export default function Search () {
     }
   }
 
-  const search = () => {
+  const search = (e) => {
     getData()
-    fetch('http://localhost:8080/https://discovery.nationalarchives.gov.uk/API/search/records?sps.heldByCode=TNA&sps.searchQuery=' + query)
+    fetch('http://localhost:9090/TNA/' + query)
       .then(response => response.json())
       .then(response => setDisplayTNA(response.records))
-    fetch('http://localhost:8080/https://discovery.nationalarchives.gov.uk/API/search/records?sps.heldByCode=OTH&sps.searchQuery=' + query)
+    fetch('http://localhost:9090/OTH/' + query)
       .then(response => response.json())
       .then(response => setDisplayOther(response.records))
     setDiscoveryActive(true)
