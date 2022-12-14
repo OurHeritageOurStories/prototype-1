@@ -139,7 +139,7 @@ export default function Search () {
             {
               displayTNA.map(item =>
                 <tr key=''>
-                  <td>{Parser(item.title.link('https://discovery.nationalarchives.gov.uk/details/r/' + query))}</td>
+                  <td>{Parser(item.title.link('https://discovery.nationalarchives.gov.uk/details/r/' + item.id))}</td>
                   <td>{item.reference}</td>
                   <td>{item.coveringDates}</td>
                 </tr>
