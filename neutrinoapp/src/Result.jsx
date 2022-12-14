@@ -21,6 +21,7 @@ export default function Result () {
   id = id.replaceAll('+€$', '/').replaceAll('+$£', '.')
   const [isActive, setIsActive] = useState(false)
   const [isNumber, setIsNumber] = useState(false)
+  const [isReady, setIsReady] = useState(false)
 
   const getData = async () => {
     setIsActive(true)
@@ -43,6 +44,7 @@ export default function Result () {
         i.m = words
       }
       setDisplayWiki(simplifiedResults)
+      setIsReady(true)
     } catch (err) {
       console.log(err)
     }
@@ -78,14 +80,15 @@ export default function Result () {
               {Parser(id.split('/').pop().replaceAll('_', ' ').link(id))} ({item.count} results)
             </h1>)}
         </div>
-        <table className='table'>
+        <table className='table' style={{ visibility: isReady ? 'visible' : 'hidden' }}>
           <tbody>
             {
               displayWiki.map(item =>
+
                 <tr key={item.id}>
                   <div className='preview'>
-                    <td>{item.text}</td>
-                    <td>{item.m}</td>
+                    <td>{item.text}<br /><b>Source</b>: unknown</td>
+                    <td>Mentions:<br />{item.m}</td>
                   </div>
                 </tr>
               )
