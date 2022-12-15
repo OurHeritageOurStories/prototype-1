@@ -1,6 +1,9 @@
 import React from 'react'
 import './App.css'
 import Parser from 'html-react-parser'
+import {
+  Link
+} from 'react-router-dom'
 
 const { useState } = React
 const WBK = require('wikibase-sdk')
@@ -10,59 +13,44 @@ const wdk = WBK({
   sparqlEndpoint: 'http://localhost:9999/bigdata/namespace/undefined/sparql'
 })
 
-export default function App () {
+export default function Search () {
   const [query, setQuery] = useState('')
   const [displayTNA, setDisplayTNA] = useState([{ title: '' }])
   const [displayOther, setDisplayOther] = useState([{ title: '' }])
   const [displayWiki, setDisplayWiki] = useState([{ s: '', p: '', o: '' }])
-  const [displayTexts, setDisplayTexts] = useState([{ s: '', p: '', o: '' }])
-  const [isActive, setIsActive] = useState(false)
+  const [ohosActive, setOhosActive] = useState(false)
+  const [discoveryActive, setDiscoveryActive] = useState(false)
+  const [initQuery, setInitQuery] = useState(false)
 
   const onInputChange = (event) => {
     setQuery(event.target.value)
   }
 
   const getData = async () => {
-    const sparql = 'prefix tanc: <http://tanc.manchester.ac.uk/> SELECT  ?s ?p ?o WHERE  { ?s  ?p  ?o FILTER ( ( regex(str(?s), "' + query + '", "i") || regex(str(?p), "' + query + '", "i") ) || regex(str(?o), "' + query + '", "i") ) FILTER ( ?p NOT IN (tanc:text) )}'
-    const url = wdk.sparqlQuery(sparql)
-    try {
-      const response = await superagent.get(url)
-      var simplifiedResults = WBK.simplify.sparqlResults(response.text)
-      for (var i of simplifiedResults) {
-        if (i.s.indexOf('/:') !== -1) { // only tanc:mentions should do this for now, if this changes, this bit needs to change
-          i.s = i.s.split(':').pop().replaceAll('_', ' ')
-          i.s = <p>{Parser(i.s.split('/').pop().link('#' + i.s.split('/').pop()))}</p>
-        } else if (i.s.indexOf('tanc.manchester.ac.uk') !== -1 && i.s.indexOf('localhost') === -1) {
-          i.s = <p>{Parser(i.s.split('/').pop().link('#' + i.s.split('/').pop()))}</p>
-        } else if (i.s.indexOf('http') !== -1 && i.s.indexOf('localhost') === -1) {
-          i.s = <p>{Parser(i.s.split('/').pop().link(i.s))}</p>
-        } else {
-          i.s = i.s.split('/').pop().replaceAll('_', ' ')
-        }
-        i.p = i.p.split(':').pop().split('/').pop().replaceAll('_', ' ')
-        if (i.o.indexOf('http') !== -1 && i.o.indexOf('localhost') === -1) {
-          i.o = <p>{Parser(i.o.split('/').pop().replaceAll('_', ' ').link(i.o))}</p>
-        } else {
-          i.o = i.o.split('/').pop().replaceAll('_', ' ')
-        }
+    setInitQuery(true)
+    var sparqlQuery = query.replaceAll(' ', '_')
+    var sparql = ''
+    if (sparqlQuery.includes('_')) {
+      var sparqlQuery1 = sparqlQuery.split('_')[0]
+      var sparqlQuery2 = sparqlQuery.split('_')[1]
+      var sparqlQuery3 = sparqlQuery.split('_')[2]
+      var sparqlQuery4 = sparqlQuery.split('_')[3]
+      if (sparqlQuery4) {
+        sparql = 'prefix tanc: <http://tanc.manchester.ac.uk/> SELECT DISTINCT ?o (count(?text) as ?count) WHERE { { ?s <http://tanc.manchester.ac.uk/text> ?text. ?s tanc:mentions ?o FILTER (regex(str(?o), "' + sparqlQuery1 + '", "i"))} UNION { ?s <http://tanc.manchester.ac.uk/text> ?text. ?s tanc:mentions ?o FILTER (regex(str(?o), "' + sparqlQuery2 + '", "i"))} UNION { ?s <http://tanc.manchester.ac.uk/text> ?text. ?s tanc:mentions ?o FILTER (regex(str(?o), "' + sparqlQuery3 + '", "i"))} UNION { ?s <http://tanc.manchester.ac.uk/text> ?text. ?s tanc:mentions ?o FILTER (regex(str(?o), "' + sparqlQuery4 + '", "i"))} } GROUP BY ?o ORDER BY DESC(?count)'
+      } else if (sparqlQuery3) {
+        sparql = 'prefix tanc: <http://tanc.manchester.ac.uk/> SELECT DISTINCT ?o (count(?text) as ?count) WHERE { { ?s <http://tanc.manchester.ac.uk/text> ?text. ?s tanc:mentions ?o FILTER (regex(str(?o), "' + sparqlQuery1 + '", "i"))} UNION { ?s <http://tanc.manchester.ac.uk/text> ?text. ?s tanc:mentions ?o FILTER (regex(str(?o), "' + sparqlQuery2 + '", "i"))} UNION { ?s <http://tanc.manchester.ac.uk/text> ?text. ?s tanc:mentions ?o FILTER (regex(str(?o), "' + sparqlQuery3 + '", "i"))} } GROUP BY ?o ORDER BY DESC(?count)'
+      } else {
+        sparql = 'prefix tanc: <http://tanc.manchester.ac.uk/> SELECT DISTINCT ?o (count(?text) as ?count) WHERE { { ?s <http://tanc.manchester.ac.uk/text> ?text. ?s tanc:mentions ?o FILTER (regex(str(?o), "' + sparqlQuery1 + '", "i"))} UNION { ?s <http://tanc.manchester.ac.uk/text> ?text. ?s tanc:mentions ?o FILTER (regex(str(?o), "' + sparqlQuery2 + '", "i"))} } GROUP BY ?o ORDER BY DESC(?count)'
       }
-      setDisplayWiki(simplifiedResults)
-    } catch (err) {
-      console.log(err)
+    } else {
+      sparql = 'prefix tanc: <http://tanc.manchester.ac.uk/> SELECT DISTINCT ?o (count(?text) as ?count) WHERE { ?s <http://tanc.manchester.ac.uk/text> ?text. ?s tanc:mentions ?o FILTER (regex(str(?o), "' + sparqlQuery + '", "i"))} GROUP BY ?o ORDER BY DESC(?count)'
     }
+    var url = wdk.sparqlQuery(sparql)
     try {
-      const sparqlTexts = 'prefix tanc: <http://tanc.manchester.ac.uk/> SELECT ?s ?o WHERE { ?s tanc:text ?o .}'
-      const urlTexts = wdk.sparqlQuery(sparqlTexts)
-      const responseTexts = await superagent.get(urlTexts)
-      var simplifiedTextsResults = WBK.simplify.sparqlResults(responseTexts.text)
-      for (var j of simplifiedTextsResults) {
-        if (j.s.indexOf('tanc.manchester.ac.uk') !== -1 && j.s.indexOf('localhost') === -1) {
-          j.s = <p id={j.s.split('/').pop()}>{Parser(j.s.split('/').pop())}</p>
-        } else {
-          j.s = j.s.split('/').pop().replaceAll('_', ' ')
-        }
-      }
-      setDisplayTexts(simplifiedTextsResults)
+      var response = await superagent.get(url)
+      var simplifiedResults = WBK.simplify.sparqlResults(response.text)
+      setDisplayWiki(simplifiedResults)
+      setOhosActive(true)
     } catch (err) {
       console.log(err)
     }
@@ -76,20 +64,67 @@ export default function App () {
     fetch('http://localhost:9090/OTH/' + query)
       .then(response => response.json())
       .then(response => setDisplayOther(response.records))
-    setIsActive(true)
+    setDiscoveryActive(true)
+  }
+
+  function handleClick (id) {
+    const Discovery = document.getElementById('Discovery')
+    const OHOS = document.getElementById('OHOS')
+    if (id === 1 && discoveryActive === true) {
+      Discovery.scrollIntoView({ behavior: 'smooth' })
+    } else if (id === 0 && discoveryActive === true) {
+      OHOS.scrollIntoView({ behavior: 'smooth' })
+    }
+  }
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      search()
+    }
+  }
+
+  const submitHandler = (e) => {
+    e.preventDefault()
+  }
+
+  if (initQuery === false) {
+    getData()
   }
 
   return (
     <div className='App'>
       <div className='Search'>
-        <form>
+        <form onSubmit={submitHandler}>
           <label>
-            <input type='text' name='query' value={query} onChange={onInputChange} />
+            <input id='searchInput' type='text' onChange={onInputChange} onKeyDown={handleKeyPress} />
           </label>
-          <button className='button' type='button' onClick={search}> Search </button>
+          <button className='button' type='button' onClick={search}> Search
+          </button>
         </form>
       </div>
-      <div className='Discovery' style={{ visibility: isActive ? 'visible' : 'hidden' }}>
+      <div id='OHOS' style={{ visibility: ohosActive ? 'visible' : 'hidden' }}>
+        <h1>OHOS</h1>
+        <table className='table'>
+          <tbody>
+            {
+              displayWiki.map(item =>
+                <tr key=''>
+                  <td>
+                    <Link to={{
+                      pathname: `/${item.o.replaceAll('/', '+€$').replaceAll('.', '+$£')}`
+                    }}
+                    >
+                      {item.o.split('/').pop().replaceAll('_', ' ')}
+                    </Link>{}
+                  </td>
+                  <td>{item.count} results</td>
+                </tr>
+              )
+            }
+          </tbody>
+        </table>
+      </div>
+      <div id='Discovery' className='Discovery' style={{ visibility: discoveryActive ? 'visible' : 'hidden' }}>
         <h1>Discovery</h1>
         <h2>The National Archives</h2>
         <table className='table'>
@@ -136,45 +171,11 @@ export default function App () {
           </tbody>
         </table>
         <br />
-        <h1>OHOS</h1>
-        <table className='table'>
-          <thead>
-            <tr>
-              <th>Subject</th>
-              <th>Relationship</th>
-              <th>Object</th>
-            </tr>
-          </thead>
-          <tbody>
-            {
-              displayWiki.map(item =>
-                <tr key=''>
-                  <td>{item.s}</td>
-                  <td>{item.p}</td>
-                  <td>{item.o}</td>
-                </tr>
-              )
-            }
-          </tbody>
-        </table>
-      </div>
-      <div style={{ visibility: isActive ? 'visible' : 'hidden' }}>
-        <h2>Texts</h2>
-        <table className='table'>
-          <tbody>
-            {
-              displayTexts.map(item =>
-                <tr key=''>
-                  <td>{item.s}</td>
-                  <td>{item.o}</td>
-                </tr>
-              )
-            }
-          </tbody>
-        </table>
+        <h2>{Parser('More from Discovery'.link('https://discovery.nationalarchives.gov.uk/results/r?_q=' + query.replaceAll(' ', '+')))}</h2>
       </div>
       <div className='navbar'>
-        <a href='#'>Home</a>
+        <a onClick={() => handleClick(0)} style={{ visibility: discoveryActive ? 'visible' : 'hidden' }}>OHOS</a><br />
+        <a onClick={() => handleClick(1)} style={{ visibility: discoveryActive ? 'visible' : 'hidden' }}>Discovery</a>
       </div>
     </div>
   )
