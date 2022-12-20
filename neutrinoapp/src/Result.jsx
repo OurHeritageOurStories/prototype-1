@@ -34,9 +34,11 @@ export default function Result () {
         var words = i.m.split(' ')
         for (var j = 0; j < words.length; j++) {
           words[j] =
-            <Link to={{
-              pathname: `/${words[j].replaceAll('/', '+€$').replaceAll('.', '+$£')}`
-            }}
+            <Link
+              to={{
+                pathname: `/${words[j].replaceAll('/', '+€$').replaceAll('.', '+$£')}`
+              }}
+              onClick={newPage}
             >
               {words[j].split('/').pop().replaceAll('_', ' ')}<br />
             </Link>
@@ -87,26 +89,23 @@ export default function Result () {
             </h1>)}
         </div>
         <table className='table' style={{ visibility: isReady ? 'visible' : 'hidden' }}>
-          <tbody>
-            {
-              displayWiki.map(item =>
-
-                <tr key={item.id}>
-                  <div className='preview'>
-                    <td>{item.text}<br /><b>Source</b>: unknown</td>
-                    <td onClick={newPage}>Mentions:<br />{item.m}</td>
-                  </div>
-                </tr>
-              )
-            }
-          </tbody>
+          {
+            displayWiki.map(item =>
+              <tr key={item.id}>
+                <div>
+                  <td className='left'><details><summary>{item.text.split(' ').slice(0, 150).join(' ')}</summary>{item.text.split(' ').slice(150).join(' ')}</details><br /><b>Source</b>: unknown</td>
+                  <td className='right'>Related:<br /><div className='rightDiv'>{item.m}</div></td>
+                </div>
+              </tr>
+            )
+          }
         </table>
       </div>
       <div className='navbar'>
         <Link to={{
           pathname: '/'
         }}
-        >Back to Search
+        >To Search
         </Link>
       </div>
     </div>
