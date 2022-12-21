@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react' // useEffect
 import './App.css'
 import Parser from 'html-react-parser'
 import {
@@ -6,7 +6,6 @@ import {
   Link
 } from 'react-router-dom'
 
-const { useState } = React
 const WBK = require('wikibase-sdk')
 const superagent = require('superagent')
 const wdk = WBK({

@@ -7,10 +7,13 @@ body {
   font-family: Arial;
   text-align: center;
   text-overflow: ellipsis;
+  line-height: 1.2;
 }
 
 table{
   border-spacing: 40px;
+  margin-left: auto; 
+  margin-right: auto;
 }
 
 th, td, tr {
@@ -38,6 +41,15 @@ td:hover .extra {
   position: fixed;
   top: 1px;
   left: 1px;
+}
+
+.centre {
+  padding: 15px;
+  border: 1px solid grey;
+  margin-left: auto; 
+  margin-right: auto;
+  line-height: 1.6;
+  width: 500px;
 }
 
 .left {
