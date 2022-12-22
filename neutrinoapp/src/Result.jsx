@@ -78,6 +78,10 @@ export default function Result () {
     setIsActive(false)
   }
 
+  const changeClass = event => {
+    event.currentTarget.classList.toggle('rightDivOpen')
+  }
+
   return (
     <div className='App'>
       <div id='OHOS'>
@@ -93,7 +97,7 @@ export default function Result () {
               <tr key={item.id}>
                 <div>
                   <td className='left'><details><summary>{item.text.split(' ').slice(0, 150).join(' ')}</summary>{item.text.split(' ').slice(150).join(' ')}</details><br /><b>Source</b>: unknown</td>
-                  <td className='right'>Related:<br /><div className='rightDiv'>{item.m}</div></td>
+                  <td className='right'>Related:<br /><div className='rightDiv' onClick={changeClass}>{item.m}</div></td>
                 </div>
               </tr>
             )

@@ -69,6 +69,11 @@ td:hover .extra {
   max-height: 180px;
 }
 
-.rightDiv:hover {
+.rightDiv:hover, .rightDiv:active {
   max-height: none;
+}
+
+.rightDivOpen {
+  max-height: none;
+  background-color: rgb(250, 250, 249);
 }
