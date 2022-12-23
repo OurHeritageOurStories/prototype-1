@@ -9,8 +9,8 @@ import {
 const WBK = require('wikibase-sdk')
 const superagent = require('superagent')
 const wdk = WBK({
-  instance: 'http://localhost:8080/http://localhost:80',
-  sparqlEndpoint: 'http://localhost:8080/http://localhost:9999/bigdata/namespace/undefined/sparql'
+  instance: 'http://localhost:80',
+  sparqlEndpoint: 'http://localhost:9999/bigdata/namespace/undefined/sparql'
 })
 
 export default function Result () {
