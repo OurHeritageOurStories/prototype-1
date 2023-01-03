@@ -12,9 +12,14 @@ Please note, this Readme is in a very "Rough and ready" state, and will be updat
       - "9999:9999"
 ```
 4. In the "example" directory, run `docker-compose -f docker-compose.yml -f docker-compose.extra.yml up -d`
-5. After a few minutes (its starting quite a few things), go to `localhost:80` to confirm it has all run sucessfully.
+5. After a few minutes (it's starting quite a few things), go to `localhost:80` to confirm it has all run successfully.
 6. Go to `http://localhost:9999/bigdata/#update`. Upload `ai_lab_3.ttl` with Turtle-RDR as the format.
+7. Go to the "neutrinoapp" directory and run `npm install --legacy-peer-deps`.
 
 ## Start
 
-Go to the neutrinoapp folder and run `npm start`.
+1. Either  
+a) Go to the "go" directory and run `go run main.go`  
+or if you want to use Docker  
+b) `docker build -t ohos_go_api .` and then `docker-compose up` 
+2. Go to the "neutrinoapp" directory and run `npm start`.
