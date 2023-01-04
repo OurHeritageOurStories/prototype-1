@@ -1,13 +1,11 @@
-import React from 'react'
+import React, { useState } from 'react' // useEffect
 import './App.css'
 import Parser from 'html-react-parser'
 import {
   Link
 } from 'react-router-dom'
 
-const { useState } = React
 const WBK = require('wikibase-sdk')
-const superagent = require('superagent')
 const wdk = WBK({
   instance: 'http://localhost:80',
   sparqlEndpoint: 'http://localhost:9999/bigdata/namespace/undefined/sparql'
@@ -47,17 +45,22 @@ export default function Search () {
     }
     var url = wdk.sparqlQuery(sparql)
     try {
-      var response = await superagent.get(url)
-      var simplifiedResults = WBK.simplify.sparqlResults(response.text)
-      setDisplayWiki(simplifiedResults)
-      setOhosActive(true)
+      fetch('http://localhost:9090/SPARQL/sparql', {
+        method: 'POST',
+        headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: url })
+      })
+        .then(response => response.json())
+        .then(response => setDisplayWiki(WBK.simplify.sparqlResults(response)))
+        .then(response => setOhosActive(true))
     } catch (err) {
       console.log(err)
     }
   }
 
-  const search = (e) => {
+  const search = () => {
     getData()
+
     fetch('http://localhost:9090/TNA/' + query)
       .then(response => response.json())
       .then(response => setDisplayTNA(response.records))
@@ -68,12 +71,18 @@ export default function Search () {
   }
 
   function handleClick (id) {
-    const Discovery = document.getElementById('Discovery')
     const OHOS = document.getElementById('OHOS')
-    if (id === 1 && discoveryActive === true) {
-      Discovery.scrollIntoView({ behavior: 'smooth' })
-    } else if (id === 0 && discoveryActive === true) {
+    const TNA = document.getElementById('TNA')
+    const other = document.getElementById('other')
+    const more = document.getElementById('more')
+    if (id === 0 && discoveryActive === true) {
       OHOS.scrollIntoView({ behavior: 'smooth' })
+    } else if (id === 1 && discoveryActive === true) {
+      TNA.scrollIntoView({ behavior: 'smooth' })
+    } else if (id === 2 && discoveryActive === true) {
+      other.scrollIntoView({ behavior: 'smooth' })
+    } else if (id === 3 && discoveryActive === true) {
+      more.scrollIntoView({ behavior: 'smooth' })
     }
   }
 
@@ -107,8 +116,8 @@ export default function Search () {
         <table className='table'>
           <tbody>
             {
-              displayWiki.map(item =>
-                <tr key=''>
+              displayWiki.map((item, index) =>
+                <tr key={index}>
                   <td>
                     <Link to={{
                       pathname: `/${item.o.replaceAll('/', '+€$').replaceAll('.', '+$£')}`
@@ -126,56 +135,38 @@ export default function Search () {
       </div>
       <div id='Discovery' className='Discovery' style={{ visibility: discoveryActive ? 'visible' : 'hidden' }}>
         <h1>Discovery</h1>
-        <h2>The National Archives</h2>
+        <h2 id='TNA'>The National Archives</h2>
         <table className='table'>
-          <thead>
-            <tr>
-              <th>Title</th>
-              <th>Reference</th>
-              <th>Dates</th>
-            </tr>
-          </thead>
           <tbody>
             {
-              displayTNA.map(item =>
-                <tr key=''>
-                  <td>{Parser(item.title.link('https://discovery.nationalarchives.gov.uk/details/r/' + item.id))}</td>
-                  <td>{item.reference}</td>
-                  <td>{item.coveringDates}</td>
+              displayTNA.map((item, index) =>
+                <tr key={index}>
+                  <p className='centre'><details><summary>{Parser(item.title.link('https://discovery.nationalarchives.gov.uk/details/r/' + item.id))}<br /> <b>Reference:</b> {item.reference}<br /><b>Dates:</b> {item.coveringDates}</summary><b>Context:</b> {item.context}<br /><b>Department:</b> {item.department}<br /><b>Taxonomies:</b> {item.taxonomies}<br /><b>Catalogue level:</b> {item.catalogueLevel}<br /> <b>ID:</b> {item.id}<br /><b>Relevance to query:</b> {item.score}</details></p>
                 </tr>
               )
             }
           </tbody>
         </table>
-        <h2>Other Archives</h2>
+        <h2 id='other'>Other Archives</h2>
         <table className='table'>
-          <thead>
-            <tr>
-              <th>Title</th>
-              <th>Reference</th>
-              <th>Dates</th>
-              <th>Held by</th>
-            </tr>
-          </thead>
           <tbody>
             {
-              displayOther.map(item =>
-                <tr key=''>
-                  <td>{Parser(item.title.link('https://discovery.nationalarchives.gov.uk/details/r/' + item.id))}</td>
-                  <td>{item.reference}</td>
-                  <td>{item.coveringDates}</td>
-                  <td>{item.heldBy}</td>
+              displayOther.map((item, index) =>
+                <tr key={index}>
+                  <p className='centre'><details><summary>{Parser(item.title.link('https://discovery.nationalarchives.gov.uk/details/r/' + item.id))}<br /> <b>Reference:</b> {item.reference}<br /><b>Dates:</b> {item.coveringDates}<br /><b>Held by:</b> {item.heldBy}</summary><b>Context:</b> {item.context}<br /><b>Catalogue level:</b> {item.catalogueLevel}<br /> <b>ID:</b> {item.id}<br /><b>Relevance to query:</b> {item.score}</details></p>
                 </tr>
               )
             }
           </tbody>
         </table>
         <br />
-        <h2>{Parser('More from Discovery'.link('https://discovery.nationalarchives.gov.uk/results/r?_q=' + query.replaceAll(' ', '+')))}</h2>
+        <h2 id='more'>{Parser('More from Discovery'.link('https://discovery.nationalarchives.gov.uk/results/r?_q=' + query.replaceAll(' ', '+')))}</h2>
       </div>
       <div className='navbar'>
         <a onClick={() => handleClick(0)} style={{ visibility: discoveryActive ? 'visible' : 'hidden' }}>OHOS</a><br />
-        <a onClick={() => handleClick(1)} style={{ visibility: discoveryActive ? 'visible' : 'hidden' }}>Discovery</a>
+        <a onClick={() => handleClick(1)} style={{ visibility: discoveryActive ? 'visible' : 'hidden' }}>TNA</a><br />
+        <a onClick={() => handleClick(2)} style={{ visibility: discoveryActive ? 'visible' : 'hidden' }}>Other</a><br />
+        <a onClick={() => handleClick(3)} style={{ visibility: discoveryActive ? 'visible' : 'hidden' }}>More</a>
       </div>
     </div>
   )

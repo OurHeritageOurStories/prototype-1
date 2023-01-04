@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react' // useEffect
 import './App.css'
 import Parser from 'html-react-parser'
 import {
@@ -6,12 +6,10 @@ import {
   Link
 } from 'react-router-dom'
 
-const { useState } = React
 const WBK = require('wikibase-sdk')
-const superagent = require('superagent')
 const wdk = WBK({
-  instance: 'http://localhost:8080/http://localhost:80',
-  sparqlEndpoint: 'http://localhost:8080/http://localhost:9999/bigdata/namespace/undefined/sparql'
+  instance: 'http://localhost:80',
+  sparqlEndpoint: 'http://localhost:9999/bigdata/namespace/undefined/sparql'
 })
 
 export default function Result () {
@@ -24,40 +22,53 @@ export default function Result () {
   const [isReady, setIsReady] = useState(false)
 
   const getData = async () => {
-    setIsActive(true)
     const sparql = 'SELECT DISTINCT ?text (group_concat(?mentioned;separator=" ") as ?m)  WHERE { ?s <http://tanc.manchester.ac.uk/mentions> ?mentioned. ?s <http://tanc.manchester.ac.uk/text> ?text. ?s <http://tanc.manchester.ac.uk/mentions> <' + id + '>.} GROUP BY ?text'
     const url = wdk.sparqlQuery(sparql)
     try {
-      const response = await superagent.get(url)
-      var simplifiedResults = WBK.simplify.sparqlResults(response.text)
-      for (var i of simplifiedResults) {
-        var words = i.m.split(' ')
-        for (var j = 0; j < words.length; j++) {
-          words[j] =
-            <Link to={{
-              pathname: `/${words[j].replaceAll('/', '+€$').replaceAll('.', '+$£')}`
-            }}
-            >
-              {words[j].split('/').pop().replaceAll('_', ' ')}<br />
-            </Link>
-        }
-        i.m = words
-      }
-      setDisplayWiki(simplifiedResults)
-      setIsReady(true)
+      fetch('http://localhost:9090/SPARQL/sparql', {
+        method: 'POST',
+        headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: url })
+      })
+        .then(response => response.json())
+        .then(response => {
+          setIsActive(true)
+          var simplifiedResults = WBK.simplify.sparqlResults(response)
+          for (var i of simplifiedResults) {
+            var words = i.m.split(' ')
+            for (var j = 0; j < words.length; j++) {
+              words[j] =
+                <Link
+                  to={{
+                    pathname: `/${words[j].replaceAll('/', '+€$').replaceAll('.', '+$£')}`
+                  }}
+                  onClick={newPage}
+                >
+                  {words[j].split('/').pop().replaceAll('_', ' ')}<br />
+                </Link>
+            }
+            i.m = words
+          }
+          setDisplayWiki(simplifiedResults)
+          setIsReady(true)
+        })
     } catch (err) {
       console.log(err)
     }
   }
 
   const getNumber = async () => {
-    setIsNumber(true)
     const sparql = 'SELECT (count(?o) as ?count) WHERE { ?s <http://tanc.manchester.ac.uk/text> ?o. ?s <http://tanc.manchester.ac.uk/mentions> <' + id + '>.}'
     const url = wdk.sparqlQuery(sparql)
     try {
-      const response = await superagent.get(url)
-      var simplifiedResults = WBK.simplify.sparqlResults(response.text)
-      setDisplayNumber(simplifiedResults)
+      fetch('http://localhost:9090/SPARQL/sparql', {
+        method: 'POST',
+        headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: url })
+      })
+        .then(response => response.json())
+        .then(response => setDisplayNumber(WBK.simplify.sparqlResults(response)))
+        .then(response => setIsNumber(true))
     } catch (err) {
       console.log(err)
     }
@@ -77,6 +88,10 @@ export default function Result () {
     setIsActive(false)
   }
 
+  const changeClass = event => {
+    event.currentTarget.classList.toggle('rightDivOpen')
+  }
+
   return (
     <div className='App'>
       <div id='OHOS'>
@@ -87,26 +102,23 @@ export default function Result () {
             </h1>)}
         </div>
         <table className='table' style={{ visibility: isReady ? 'visible' : 'hidden' }}>
-          <tbody>
-            {
-              displayWiki.map(item =>
-
-                <tr key={item.id}>
-                  <div className='preview'>
-                    <td>{item.text}<br /><b>Source</b>: unknown</td>
-                    <td onClick={newPage}>Mentions:<br />{item.m}</td>
-                  </div>
-                </tr>
-              )
-            }
-          </tbody>
+          {
+            displayWiki.map(item =>
+              <tr key={item.id}>
+                <div>
+                  <td className='left'><details><summary>{item.text.split(' ').slice(0, 150).join(' ')}</summary>{item.text.split(' ').slice(150).join(' ')}</details><br /><b>Source</b>: unknown</td>
+                  <td className='right'>Related:<br /><div className='rightDiv' onClick={changeClass}>{item.m}</div></td>
+                </div>
+              </tr>
+            )
+          }
         </table>
       </div>
       <div className='navbar'>
         <Link to={{
           pathname: '/'
         }}
-        >Back to Search
+        >To Search
         </Link>
       </div>
     </div>
