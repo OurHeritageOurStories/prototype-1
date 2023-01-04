@@ -6,7 +6,6 @@ import {
 } from 'react-router-dom'
 
 const WBK = require('wikibase-sdk')
-const superagent = require('superagent')
 const wdk = WBK({
   instance: 'http://localhost:80',
   sparqlEndpoint: 'http://localhost:9999/bigdata/namespace/undefined/sparql'
@@ -46,10 +45,14 @@ export default function Search () {
     }
     var url = wdk.sparqlQuery(sparql)
     try {
-      var response = await superagent.get(url)
-      var simplifiedResults = WBK.simplify.sparqlResults(response.text)
-      setDisplayWiki(simplifiedResults)
-      setOhosActive(true)
+      fetch('http://localhost:9090/SPARQL/sparql', {
+        method: 'POST',
+        headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: url })
+      })
+        .then(response => response.json())
+        .then(response => setDisplayWiki(WBK.simplify.sparqlResults(response)))
+        .then(response => setOhosActive(true))
     } catch (err) {
       console.log(err)
     }

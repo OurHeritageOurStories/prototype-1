@@ -7,7 +7,6 @@ import {
 } from 'react-router-dom'
 
 const WBK = require('wikibase-sdk')
-const superagent = require('superagent')
 const wdk = WBK({
   instance: 'http://localhost:80',
   sparqlEndpoint: 'http://localhost:9999/bigdata/namespace/undefined/sparql'
@@ -23,42 +22,53 @@ export default function Result () {
   const [isReady, setIsReady] = useState(false)
 
   const getData = async () => {
-    setIsActive(true)
     const sparql = 'SELECT DISTINCT ?text (group_concat(?mentioned;separator=" ") as ?m)  WHERE { ?s <http://tanc.manchester.ac.uk/mentions> ?mentioned. ?s <http://tanc.manchester.ac.uk/text> ?text. ?s <http://tanc.manchester.ac.uk/mentions> <' + id + '>.} GROUP BY ?text'
     const url = wdk.sparqlQuery(sparql)
     try {
-      const response = await superagent.get(url)
-      var simplifiedResults = WBK.simplify.sparqlResults(response.text)
-      for (var i of simplifiedResults) {
-        var words = i.m.split(' ')
-        for (var j = 0; j < words.length; j++) {
-          words[j] =
-            <Link
-              to={{
-                pathname: `/${words[j].replaceAll('/', '+€$').replaceAll('.', '+$£')}`
-              }}
-              onClick={newPage}
-            >
-              {words[j].split('/').pop().replaceAll('_', ' ')}<br />
-            </Link>
-        }
-        i.m = words
-      }
-      setDisplayWiki(simplifiedResults)
-      setIsReady(true)
+      fetch('http://localhost:9090/SPARQL/sparql', {
+        method: 'POST',
+        headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: url })
+      })
+        .then(response => response.json())
+        .then(response => {
+          setIsActive(true)
+          var simplifiedResults = WBK.simplify.sparqlResults(response)
+          for (var i of simplifiedResults) {
+            var words = i.m.split(' ')
+            for (var j = 0; j < words.length; j++) {
+              words[j] =
+                <Link
+                  to={{
+                    pathname: `/${words[j].replaceAll('/', '+€$').replaceAll('.', '+$£')}`
+                  }}
+                  onClick={newPage}
+                >
+                  {words[j].split('/').pop().replaceAll('_', ' ')}<br />
+                </Link>
+            }
+            i.m = words
+          }
+          setDisplayWiki(simplifiedResults)
+          setIsReady(true)
+        })
     } catch (err) {
       console.log(err)
     }
   }
 
   const getNumber = async () => {
-    setIsNumber(true)
     const sparql = 'SELECT (count(?o) as ?count) WHERE { ?s <http://tanc.manchester.ac.uk/text> ?o. ?s <http://tanc.manchester.ac.uk/mentions> <' + id + '>.}'
     const url = wdk.sparqlQuery(sparql)
     try {
-      const response = await superagent.get(url)
-      var simplifiedResults = WBK.simplify.sparqlResults(response.text)
-      setDisplayNumber(simplifiedResults)
+      fetch('http://localhost:9090/SPARQL/sparql', {
+        method: 'POST',
+        headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: url })
+      })
+        .then(response => response.json())
+        .then(response => setDisplayNumber(WBK.simplify.sparqlResults(response)))
+        .then(response => setIsNumber(true))
     } catch (err) {
       console.log(err)
     }

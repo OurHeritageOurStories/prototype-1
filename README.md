@@ -17,4 +17,11 @@ Please note, this Readme is in a very "Rough and ready" state, and will be updat
 
 ## Start
 
-Go to the neutrinoapp folder and run `npm start`.
+A. 
+  1. Go to the neutrinoapp folder and run `npm start`.
+  2. Go to the Go folder and run `go run main.go`.
+
+B. 
+  1. Go to the neutrinoapp folder and run `docker build -t ohos_observatory_frontend .`.
+  1. Go to the Go folder and run `docker build -t ohos_go_api .`.
+  1. Go to the main folder and run `docker-compose up`.
