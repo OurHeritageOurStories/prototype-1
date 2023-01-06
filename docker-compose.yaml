@@ -21,8 +21,8 @@ services:
       - "8001:8001"
       - "8444:8444"
   
-  kong_react_frontend:
-    image: ohos-observatory-frontend #259004456259.dkr.ecr.eu-west-2.amazonaws.com/ohos-observatory-frontend
+  kong_vue_frontend:
+    image: 259004456259.dkr.ecr.eu-west-2.amazonaws.com/ohos-observatory-frontend:latest #ohos_observatory_frontend 
     hostname: kong_react_frontend
     container_name: kong_react_frontend
     ports:
@@ -34,10 +34,38 @@ services:
     container_name: kong_blazegraph
     ports:
       - "3497:3497"
+      
 
   ohos_go_api: 
-    image: ohos-go-api
+    image: 259004456259.dkr.ecr.eu-west-2.amazonaws.com/go-api:latest #ohos_go_api
     hostname: ohos_go_api
     container_name: ohos_go_api
     ports:
-      - "9090:9090"
+      - "5000:5000"
+
+  wdqs:
+    image: 259004456259.dkr.ecr.eu-west-2.amazonaws.com/wdqs:latest
+    restart: unless-stopped
+    command: /runBlazegraph.sh
+    volumes:
+      - query-service-data:/wdqs/data
+    networks:
+      default:
+        aliases:
+         - wdqs.svc
+    environment:
+      - WIKIBASE_HOST=wikibase.svc
+      - WDQS_HOST=wdqs.svc
+      - WDQS_PORT=9999
+    expose:
+      - 9999
+    ports:
+      - "9999:9999"
+     # CONFIG - WIKIBASE_SCHEME can be set to 'https' if the updater should expect https concept uris
+
+
+volumes:
+  LocalSettings:
+  query-service-data:
+  elasticsearch-data:
+  mediawiki-mysql-data:

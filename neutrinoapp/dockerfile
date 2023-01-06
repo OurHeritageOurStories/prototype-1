@@ -1,7 +1,7 @@
 FROM node:16.8
 WORKDIR /app
 COPY . .
-RUN npm i
+RUN npm i --legacy-peer-deps
 RUN npm run build
 ENV NODE_ENV 16.18.2
 EXPOSE 3000
