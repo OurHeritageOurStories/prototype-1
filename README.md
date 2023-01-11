@@ -17,12 +17,13 @@ Please note, this Readme is in a very "Rough and ready" state, and will be updat
 7. Go to the "neutrinoapp" directory and run `npm install --legacy-peer-deps`.
 
 ## Start
-If you haven't already, do step 4 from above.
-Then either A: 
+Either A:
+  1. If you haven't already, do step 4 from above.
   1. Go to the neutrinoapp folder and run `npm start`.
-  2. Go to the Go folder and run `go run main.go`.
+  1. Go to the Go folder and run `go run main.go`.
 
 Or B:
+  1. If you've done step 4 from Install, take it down.
   1. Go to the neutrinoapp folder and run `docker build -t ohos_observatory_frontend .`.
   1. Go to the Go folder and run `docker build -t ohos_go_api .`.
   1. Go to the main folder and run `docker-compose up`.
