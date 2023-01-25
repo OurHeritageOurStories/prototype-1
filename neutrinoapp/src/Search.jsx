@@ -32,7 +32,7 @@ export default function Search () {
     setPage(p)
     const pageNumber = Math.max(1, p)
     getData((Math.min(pageNumber, count) - 1) * PER_PAGE)
-    dataPagination.jump(1)
+    dataPagination.jump(p)
   }
 
   const onInputChange = (event) => {
