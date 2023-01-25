@@ -6,7 +6,6 @@ import (
     "io/ioutil"
     "log"
     "net/http"
-    "os"
     "github.com/rs/cors"
     "github.com/gorilla/mux"
 )
@@ -21,7 +20,7 @@ func main() {
     r.HandleFunc("/OTH/{keyword}", getOTH)
     r.HandleFunc("/SPARQL/{url}", getSPARQL)
     handler := cors.Default().Handler(r)
-    http.ListenAndServe(":9090", handler)
+    http.ListenAndServe(":5000", handler)
 }
 
 func getTNA(w http.ResponseWriter, r *http.Request) {
@@ -32,7 +31,6 @@ func getTNA(w http.ResponseWriter, r *http.Request) {
 
     if err != nil {
         fmt.Print(err.Error())
-        os.Exit(1)
     }
 
     responseData, err := ioutil.ReadAll(response.Body)
@@ -51,7 +49,6 @@ func getOTH(w http.ResponseWriter, r *http.Request) {
 
     if err != nil {
         fmt.Print(err.Error())
-        os.Exit(1)
     }
 
     responseData, err := ioutil.ReadAll(response.Body)
@@ -76,7 +73,6 @@ func getSPARQL(w http.ResponseWriter, r *http.Request) {
 
     if err != nil {
         fmt.Print(err.Error())
-        os.Exit(1)
     }
 
     responseData, err := ioutil.ReadAll(response.Body)
