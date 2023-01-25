@@ -1,6 +1,8 @@
-import React, { useState } from 'react' // useEffect
+import React, { useState } from 'react'
 import './App.css'
 import Parser from 'html-react-parser'
+import { Pagination } from '@material-ui/lab'
+import usePagination from './Pagination'
 import {
   useParams,
   Link
@@ -21,11 +23,24 @@ export default function Result () {
   const [isNumber, setIsNumber] = useState(false)
   const [isReady, setIsReady] = useState(false)
 
-  const getData = async () => {
-    const sparql = 'SELECT DISTINCT ?text (group_concat(?mentioned;separator=" ") as ?m)  WHERE { ?s <http://tanc.manchester.ac.uk/mentions> ?mentioned. ?s <http://tanc.manchester.ac.uk/text> ?text. ?s <http://tanc.manchester.ac.uk/mentions> <' + id + '>.} GROUP BY ?text'
+  const [page, setPage] = useState(1)
+  const PER_PAGE = 10
+
+  const count = Math.ceil(displayNumber[0].count / PER_PAGE)
+  const dataPagination = usePagination(displayWiki, PER_PAGE)
+
+  const handleChange = (e, p) => {
+    setPage(p)
+    const pageNumber = Math.max(1, p)
+    getData((Math.min(pageNumber, count) - 1) * PER_PAGE)
+    dataPagination.jump(1)
+  }
+
+  const getData = async (offset) => {
+    const sparql = 'SELECT DISTINCT ?text (group_concat(?mentioned;separator=" ") as ?m)  WHERE { ?s <http://tanc.manchester.ac.uk/mentions> ?mentioned. ?s <http://tanc.manchester.ac.uk/text> ?text. ?s <http://tanc.manchester.ac.uk/mentions> <' + id + '>.} GROUP BY ?text ORDER BY ?text LIMIT ' + PER_PAGE + ' OFFSET ' + offset
     const url = wdk.sparqlQuery(sparql)
     try {
-      fetch('http://localhost:9090/SPARQL/sparql', {
+      fetch('http://localhost:5000/SPARQL/sparql', {
         method: 'POST',
         headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
         body: JSON.stringify({ url: url })
@@ -61,7 +76,7 @@ export default function Result () {
     const sparql = 'SELECT (count(?o) as ?count) WHERE { ?s <http://tanc.manchester.ac.uk/text> ?o. ?s <http://tanc.manchester.ac.uk/mentions> <' + id + '>.}'
     const url = wdk.sparqlQuery(sparql)
     try {
-      fetch('http://localhost:9090/SPARQL/sparql', {
+      fetch('http://localhost:5000/SPARQL/sparql', {
         method: 'POST',
         headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
         body: JSON.stringify({ url: url })
@@ -74,12 +89,12 @@ export default function Result () {
     }
   }
 
-  if (isActive === false) {
-    getData()
-  }
-
   if (isNumber === false) {
     getNumber()
+  }
+
+  if (isActive === false) {
+    getData(0)
   }
 
   const newPage = () => {
@@ -103,7 +118,7 @@ export default function Result () {
         </div>
         <table className='table' style={{ visibility: isReady ? 'visible' : 'hidden' }}>
           {
-            displayWiki.map(item =>
+            dataPagination.currentData().map(item =>
               <tr key={item.id}>
                 <div>
                   <td className='left'><details><summary>{item.text.split(' ').slice(0, 150).join(' ')}</summary>{item.text.split(' ').slice(150).join(' ')}</details><br /><b>Source</b>: unknown</td>
@@ -112,6 +127,14 @@ export default function Result () {
               </tr>
             )
           }
+          <Pagination
+            count={count}
+            size='large'
+            page={page}
+            variant='outlined'
+            shape='rounded'
+            onChange={handleChange}
+          />
         </table>
       </div>
       <div className='navbar'>
