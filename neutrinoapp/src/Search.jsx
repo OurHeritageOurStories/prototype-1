@@ -120,7 +120,7 @@ export default function Search () {
                 <tr key={index}>
                   <td>
                     <Link to={{
-                      pathname: `/${item.o.replaceAll('/', '+€$').replaceAll('.', '+$£')}`
+                      pathname: `Result/${item.o.split('/').pop()}/1`
                     }}
                     >
                       {item.o.split('/').pop().replaceAll('_', ' ')}
