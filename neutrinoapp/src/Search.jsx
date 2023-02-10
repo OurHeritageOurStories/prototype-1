@@ -7,8 +7,8 @@ import {
 
 const WBK = require('wikibase-sdk')
 const wdk = WBK({
-  instance: 'http://localhost:80',
-  sparqlEndpoint: 'http://localhost:9999/bigdata/namespace/undefined/sparql'
+  instance: 'http://cgdc-observatory.net',
+  sparqlEndpoint: 'http://cgdc-observatory.net/bigdata/namespace/undefined/sparql'
 })
 
 export default function Search () {
