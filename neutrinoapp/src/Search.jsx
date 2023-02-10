@@ -1,14 +1,18 @@
-import React, { useState } from 'react' // useEffect
+import React, { useState } from 'react'
 import './App.css'
 import Parser from 'html-react-parser'
+import { Pagination } from '@material-ui/lab'
+import usePagination from './Pagination'
 import {
+  // useParams,
   Link
 } from 'react-router-dom'
 
 const WBK = require('wikibase-sdk')
+const superagent = require('superagent')
 const wdk = WBK({
-  instance: 'http://cgdc-observatory.net',
-  sparqlEndpoint: 'http://cgdc-observatory.net/bigdata/namespace/undefined/sparql'
+  instance: 'http://cgdc-observatory.net/',
+  sparqlEndpoint: 'http://cgdc-observatory.net/bigdata/namespace/undefined/sparql/'
 })
 
 export default function Search () {
@@ -19,6 +23,19 @@ export default function Search () {
   const [ohosActive, setOhosActive] = useState(false)
   const [discoveryActive, setDiscoveryActive] = useState(false)
   const [initQuery, setInitQuery] = useState(false)
+
+  const [page, setPage] = useState(1)
+  const PER_PAGE = 10
+
+  const count = Math.ceil(displayWiki.length / PER_PAGE)
+  const dataPagination = usePagination(displayWiki, PER_PAGE)
+
+  const handleChange = (e, p) => {
+    setPage(p)
+    const pageNumber = Math.max(1, p)
+    getData((Math.min(pageNumber, count) - 1) * PER_PAGE)
+    dataPagination.jump(p)
+  }
 
   const onInputChange = (event) => {
     setQuery(event.target.value)
@@ -45,14 +62,10 @@ export default function Search () {
     }
     var url = wdk.sparqlQuery(sparql)
     try {
-      fetch('http://localhost:9090/SPARQL/sparql', {
-        method: 'POST',
-        headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: url })
-      })
-        .then(response => response.json())
-        .then(response => setDisplayWiki(WBK.simplify.sparqlResults(response)))
-        .then(response => setOhosActive(true))
+      var response = await superagent.get(url)
+      var simplifiedResults = WBK.simplify.sparqlResults(response.text)
+      setDisplayWiki(simplifiedResults)
+      setOhosActive(true)
     } catch (err) {
       console.log(err)
     }
@@ -61,10 +74,10 @@ export default function Search () {
   const search = () => {
     getData()
 
-    fetch('http://localhost:9090/TNA/' + query)
+    fetch('45.32.35.210:5000/TNA/' + query)
       .then(response => response.json())
       .then(response => setDisplayTNA(response.records))
-    fetch('http://localhost:9090/OTH/' + query)
+    fetch('45.32.35.210:5000/OTH/' + query)
       .then(response => response.json())
       .then(response => setDisplayOther(response.records))
     setDiscoveryActive(true)
@@ -116,7 +129,7 @@ export default function Search () {
         <table className='table'>
           <tbody>
             {
-              displayWiki.map((item, index) =>
+              dataPagination.currentData().map((item, index) =>
                 <tr key={index}>
                   <td>
                     <Link to={{
@@ -145,6 +158,14 @@ export default function Search () {
                 </tr>
               )
             }
+            <Pagination
+              count={count}
+              size='large'
+              page={page}
+              variant='outlined'
+              shape='rounded'
+              onChange={handleChange}
+            />
           </tbody>
         </table>
         <h2 id='other'>Other Archives</h2>
