@@ -12,11 +12,19 @@ export default function App () {
     <Router basename='/'>
       <Routes>
         <Route
+          path='/:page'
+          element={<Search />}
+        />
+        <Route
           path='/'
           element={<Search />}
         />
         <Route
-          path='/:id'
+          path='Result/:id/:page'
+          element={<Result />}
+        />
+        <Route
+          path='Result/:id'
           element={<Result />}
         />
       </Routes>

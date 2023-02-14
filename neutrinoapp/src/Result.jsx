@@ -16,7 +16,7 @@ export default function Result () {
   const [displayWiki, setDisplayWiki] = useState([{ text: '', m: '' }])
   const [displayNumber, setDisplayNumber] = useState([{ count: '??' }])
   var { id } = useParams()
-  id = id.replaceAll('+€$', '/').replaceAll('+$£', '.')
+  id = 'https://en.wikipedia.org/wiki/' + id
   const [isActive, setIsActive] = useState(false)
   const [isNumber, setIsNumber] = useState(false)
   const [isReady, setIsReady] = useState(false)
@@ -40,7 +40,7 @@ export default function Result () {
               words[j] =
                 <Link
                   to={{
-                    pathname: `/${words[j].replaceAll('/', '+€$').replaceAll('.', '+$£')}`
+                    pathname: `/Result/${words[j].split('/').pop()}/1`
                   }}
                   onClick={newPage}
                 >

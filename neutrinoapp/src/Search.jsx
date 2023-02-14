@@ -7,8 +7,8 @@ import {
 
 const WBK = require('wikibase-sdk')
 const wdk = WBK({
-  instance: 'http://localhost:80',
-  sparqlEndpoint: 'http://localhost:9999/bigdata/namespace/undefined/sparql'
+  instance: 'http://cgdc-observatory.net',
+  sparqlEndpoint: 'http://cgdc-observatory.net/bigdata/namespace/undefined/sparql'
 })
 
 export default function Search () {
@@ -120,7 +120,7 @@ export default function Search () {
                 <tr key={index}>
                   <td>
                     <Link to={{
-                      pathname: `/${item.o.replaceAll('/', '+€$').replaceAll('.', '+$£')}`
+                      pathname: `Result/${item.o.split('/').pop()}/1`
                     }}
                     >
                       {item.o.split('/').pop().replaceAll('_', ' ')}
