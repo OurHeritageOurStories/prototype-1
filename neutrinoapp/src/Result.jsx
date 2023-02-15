@@ -1,12 +1,15 @@
-import React, { useState } from 'react' // useEffect
+import React, { useState } from 'react'
 import './App.css'
 import Parser from 'html-react-parser'
+import { Pagination } from '@material-ui/lab'
+import usePagination from './Pagination'
 import {
   useParams,
   Link
 } from 'react-router-dom'
 
 const WBK = require('wikibase-sdk')
+const superagent = require('superagent')
 const wdk = WBK({
   instance: 'http://localhost:80',
   sparqlEndpoint: 'http://localhost:9999/bigdata/namespace/undefined/sparql'
@@ -16,13 +19,34 @@ export default function Result () {
   const [displayWiki, setDisplayWiki] = useState([{ text: '', m: '' }])
   const [displayNumber, setDisplayNumber] = useState([{ count: '??' }])
   var { id } = useParams()
+  var { pages } = useParams()
+  const idParam = id
   id = 'https://en.wikipedia.org/wiki/' + id
   const [isActive, setIsActive] = useState(false)
   const [isNumber, setIsNumber] = useState(false)
   const [isReady, setIsReady] = useState(false)
 
+  const [page, setPage] = useState(1)
+  const PER_PAGE = 10
+
+  const count = Math.ceil(displayNumber[0].count / PER_PAGE)
+  const dataPagination = usePagination(displayWiki, PER_PAGE)
+
+  const handleChange = (e, p) => {
+    window.location = '/Result/' + idParam + '/' + p
+  }
+
   const getData = async () => {
-    const sparql = 'SELECT DISTINCT ?text (group_concat(?mentioned;separator=" ") as ?m)  WHERE { ?s <http://tanc.manchester.ac.uk/mentions> ?mentioned. ?s <http://tanc.manchester.ac.uk/text> ?text. ?s <http://tanc.manchester.ac.uk/mentions> <' + id + '>.} GROUP BY ?text'
+    if (isNumber === false) {
+      getNumber()
+    }
+    console.log(displayNumber)
+    if (isNaN(pages)) {
+      pages = 1
+    }
+    const pageNumber = Math.max(1, pages)
+    const offset = (pageNumber - 1) * PER_PAGE
+    const sparql = 'SELECT DISTINCT ?text (group_concat(?mentioned;separator=" ") as ?m)  WHERE { ?s <http://tanc.manchester.ac.uk/mentions> ?mentioned. ?s <http://tanc.manchester.ac.uk/text> ?text. ?s <http://tanc.manchester.ac.uk/mentions> <' + id + '>.} GROUP BY ?text ORDER BY ?text LIMIT ' + PER_PAGE + ' OFFSET ' + offset
     const url = wdk.sparqlQuery(sparql)
     try {
       fetch('http://localhost:9090/SPARQL/sparql', {
@@ -78,10 +102,6 @@ export default function Result () {
     getData()
   }
 
-  if (isNumber === false) {
-    getNumber()
-  }
-
   const newPage = () => {
     setIsReady(false)
     setIsNumber(false)
@@ -103,7 +123,7 @@ export default function Result () {
         </div>
         <table className='table' style={{ visibility: isReady ? 'visible' : 'hidden' }}>
           {
-            displayWiki.map(item =>
+            dataPagination.currentData().map(item =>
               <tr key={item.id}>
                 <div>
                   <td className='left'><details><summary>{item.text.split(' ').slice(0, 150).join(' ')}</summary>{item.text.split(' ').slice(150).join(' ')}</details><br /><b>Source</b>: unknown</td>
@@ -112,6 +132,14 @@ export default function Result () {
               </tr>
             )
           }
+          <Pagination
+            count={count}
+            size='large'
+            page={page}
+            variant='outlined'
+            shape='rounded'
+            onChange={handleChange}
+          />
         </table>
       </div>
       <div className='navbar'>

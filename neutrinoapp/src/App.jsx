@@ -12,7 +12,7 @@ export default function App () {
     <Router basename='/'>
       <Routes>
         <Route
-          path='/:page'
+          path='/:pages'
           element={<Search />}
         />
         <Route
@@ -20,7 +20,7 @@ export default function App () {
           element={<Search />}
         />
         <Route
-          path='Result/:id/:page'
+          path='Result/:id/:pages'
           element={<Result />}
         />
         <Route
