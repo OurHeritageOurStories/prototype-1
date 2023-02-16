@@ -75,6 +75,8 @@ export default function Result () {
           }
           setDisplayWiki(simplifiedResults)
           setIsReady(true)
+      	  setPage(pageNumber)
+      	  setIsActive(true)
         })
     } catch (err) {
       console.log(err)
@@ -82,6 +84,7 @@ export default function Result () {
   }
 
   const getNumber = async () => {
+    setIsNumber(true)
     const sparql = 'SELECT (count(?o) as ?count) WHERE { ?s <http://tanc.manchester.ac.uk/text> ?o. ?s <http://tanc.manchester.ac.uk/mentions> <' + id + '>.}'
     const url = wdk.sparqlQuery(sparql)
     try {
