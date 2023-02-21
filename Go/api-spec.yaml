@@ -1,0 +1,121 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: OHOS Observatory API
+  description: API to get data for Observatory UI
+
+servers:
+  - url: https://cgdc-observatory.net/api/v1
+
+paths:
+  /discovery/{source}/{keyword}:
+    get:
+      description: Obtain list of catalouges from TNA/Other for the keyword
+      parameters:
+        - name: source
+          in: path
+          required: true
+          description: Choose the source
+          schema:
+            type: string
+
+        - name: keyword
+          in: path
+          required: true
+          description: Search the catalouges matching the keword
+          schema:
+            type: string
+          
+      responses:
+        '200':
+          description: Successfully returned the JSON from discovery API
+          content:
+            application/json:
+              schema:
+                type: object
+                
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object 
+                properties:           
+                  message:
+                    type: string
+
+  /entities:
+    get:
+      description: Returns a list of entities and their count 
+      parameters:
+        - name: keyword
+          in: query
+          description: Search the entities matching the keword
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: Specifies the page number of the entities to be displayed
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successfully returned a list of entities
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    entity:
+                      type: string
+                    count:
+                      type: integer
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:   
+                  message:
+                    type: string
+
+  /entities/{entity}:
+    get:
+      description: Returns a list of text containg entity and their related mentions
+      parameters:
+        - name: entity
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: Specifies the page number of the entities to be displayed
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successfully returned a list of text containng the  entity
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    text:
+                      type: string
+                    mentions:
+                      type: array
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:   
+                  message:
+                    type: string                    
