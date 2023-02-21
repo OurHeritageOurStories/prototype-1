@@ -118,4 +118,37 @@ paths:
                 type: object
                 properties:   
                   message:
+                    type: string
+
+  /sparql/{query}:
+    get:
+      description: executes the sparql query for query builder
+      parameters:
+        - name: query
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: Specifies the page number of the returned result to be displayed
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successfully returned the result of the query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:   
+                  message:
                     type: string                    
