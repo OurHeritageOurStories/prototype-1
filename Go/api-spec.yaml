@@ -58,6 +58,22 @@ paths:
           description: Specifies the page number of the entities to be displayed
           schema:
             type: integer
+        - name: limit
+          in: query
+          description: Limits the number of result to top N
+          schema:
+            type: integer
+        - name: sort_by
+          in: query
+          description: Specifies the record type to sort by
+          schema:
+            type: string
+        - name: sort_order
+          in: query
+          description: Specifies the sorting order ASC/DESC
+          schema:
+            type: string
+
       responses:
         '200':
           description: Successfully returned a list of entities
@@ -96,6 +112,21 @@ paths:
           description: Specifies the page number of the entities to be displayed
           schema:
             type: integer
+        - name: limit
+          in: query
+          description: Limits the number of result to top N
+          schema:
+            type: integer
+        - name: sort_by
+          in: query
+          description: Specifies the record type to sort by
+          schema:
+            type: string
+        - name: sort_order
+          in: query
+          description: Specifies the sorting order ASC/DESC
+          schema:
+            type: string
       responses:
         '200':
           description: Successfully returned a list of text containng the  entity
@@ -151,4 +182,4 @@ paths:
                 type: object
                 properties:   
                   message:
-                    type: string                    
+                    type: string
