@@ -73,6 +73,16 @@ paths:
           description: Specifies the sorting order ASC/DESC
           schema:
             type: string
+        - name: typology
+          in: query
+          description: Specifies the typology of the record
+          schema:
+            type: string
+        - name: type
+          in: query
+          description: Specifies the temporal information about type of the record
+          schema:
+            type: string
 
       responses:
         '200':
@@ -127,6 +137,17 @@ paths:
           description: Specifies the sorting order ASC/DESC
           schema:
             type: string
+        - name: typology
+          in: query
+          description: Specifies the typology of the record
+          schema:
+            type: string
+        - name: type
+          in: query
+          description: Specifies the temporal information about type of the record
+          schema:
+            type: string
+
       responses:
         '200':
           description: Successfully returned a list of text containng the  entity
