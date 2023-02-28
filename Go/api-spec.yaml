@@ -8,20 +8,17 @@ servers:
   - url: https://cgdc-observatory.net/api/v1
 
 paths:
-  /discovery/{source}/{keyword}:
+  /discovery:
     get:
       description: Obtain list of catalouges from TNA/Other for the keyword
       parameters:
         - name: source
-          in: path
-          required: true
+          in: query
           description: Choose the source
           schema:
             type: string
-
         - name: keyword
-          in: path
-          required: true
+          in: query
           description: Search the catalouges matching the keword
           schema:
             type: string
@@ -33,6 +30,185 @@ paths:
             application/json:
               schema:
                 type: object
+                items: 
+                  type: object
+                  properties:
+                    records:
+                      type: array
+                      items:
+                        types: object
+                        properties:
+                          altName:
+                            type: string
+                          places:
+                            type: array
+                            items:
+                              types: string
+                          corpBodies:
+                            type: array
+                            items:
+                              types: string
+                          taxonomies:
+                            type: array
+                            items:
+                              types: string
+                          formerReferenceDep:
+                            type: string
+                          formerReferencePro:
+                            type: string
+                          heldBy:
+                            type: array
+                            items:
+                              types: string
+                          context:
+                            type: string
+                          content:
+                            type: string
+                          urlParameters:
+                            type: string
+                          department:
+                            type: string
+                          note:
+                            type: string
+                          adminHistory:
+                            type: string
+                          arrangement:
+                            type: string
+                          mapDesignation:
+                            type: string
+                          mapScale:
+                            type: string
+                          physicalCondition:
+                            type: string
+                          catalogueLevel:
+                            type: string
+                          openingDate:
+                            type: string
+                          closureStatus:
+                            type: string
+                          closureType:
+                            type: string
+                          closureCode:
+                            type: string
+                          documentType:
+                            type: string
+                          coveringDates:
+                            type: string
+                          description:
+                            type: string
+                          endDate:
+                            type: string
+                          numEndDate:
+                            type: integer
+                          numStartDate:
+                            type: integer
+                          startDate:
+                            type: string
+                          id:
+                            type: string
+                          reference:
+                            type: string
+                          score:
+                            type: integer
+                          source:
+                            type: string
+                          title:
+                            type: string
+
+                    taxonomySubjects:
+                      type: array
+                      items:
+                        types: object
+                        properties:
+                          code:
+                            type: string
+                          count:
+                            type: integer
+                    timePeriods:
+                      type: array
+                      items:
+                        types: object
+                        properties:
+                          code:
+                            type: string
+                          count:
+                            type: integer
+                    departments:
+                      type: array
+                      items:
+                        types: object
+                        properties:
+                          code:
+                            type: string
+                          count:
+                            type: integer
+                    catalogueLevels:
+                      type: array
+                      items:
+                        types: object
+                        properties:
+                          code:
+                            type: string
+                          count:
+                            type: integer
+                    closureStatuses:
+                      type: array
+                      items:
+                        types: object
+                        properties:
+                          code:
+                            type: string
+                          count:
+                            type: integer
+                    sources:
+                      type: array
+                      items:
+                        types: object
+                        properties:
+                          code:
+                            type: string
+                          count:
+                            type: integer
+                    repositories:
+                      type: array
+                      items:
+                        types: object
+                        properties:
+                          code:
+                            type: string
+                          count:
+                            type: integer
+                    heldByReps:
+                      type: array
+                      items:
+                        types: object
+                        properties:
+                          code:
+                            type: string
+                          count:
+                            type: integer
+                    referenceFirstLetters:
+                      type: array
+                      items:
+                        types: object
+                        properties:
+                          code:
+                            type: string
+                          count:
+                            type: integer
+                    titleFirstLetters:
+                      type: array
+                      items:
+                        types: object
+                        properties:
+                          code:
+                            type: string
+                          count:
+                            type: integer
+                    count:
+                      type: integer
+                    nextBatchMark:
+                      type: string
                 
         '400':
           description: Invalid request
@@ -58,31 +234,6 @@ paths:
           description: Specifies the page number of the entities to be displayed
           schema:
             type: integer
-        - name: limit
-          in: query
-          description: Limits the number of result to top N
-          schema:
-            type: integer
-        - name: sort_by
-          in: query
-          description: Specifies the record type to sort by
-          schema:
-            type: string
-        - name: sort_order
-          in: query
-          description: Specifies the sorting order ASC/DESC
-          schema:
-            type: string
-        - name: typology
-          in: query
-          description: Specifies the typology of the record
-          schema:
-            type: string
-        - name: type
-          in: query
-          description: Specifies the temporal information about type of the record
-          schema:
-            type: string
 
       responses:
         '200':
@@ -90,14 +241,21 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
+                type: object
+                items: 
                   type: object
                   properties:
-                    entity:
-                      type: string
+                    entities:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          entity:
+                            type: string
+                          count:
+                            type: integer
                     count:
-                      type: integer
+                      type: integer 
         '400':
           description: Invalid request
           content:
@@ -122,31 +280,6 @@ paths:
           description: Specifies the page number of the entities to be displayed
           schema:
             type: integer
-        - name: limit
-          in: query
-          description: Limits the number of result to top N
-          schema:
-            type: integer
-        - name: sort_by
-          in: query
-          description: Specifies the record type to sort by
-          schema:
-            type: string
-        - name: sort_order
-          in: query
-          description: Specifies the sorting order ASC/DESC
-          schema:
-            type: string
-        - name: typology
-          in: query
-          description: Specifies the typology of the record
-          schema:
-            type: string
-        - name: type
-          in: query
-          description: Specifies the temporal information about type of the record
-          schema:
-            type: string
 
       responses:
         '200':
@@ -154,47 +287,23 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
+                type: object
+                items: 
                   type: object
                   properties:
                     text:
-                      type: string
-                    mentions:
                       type: array
-        '400':
-          description: Invalid request
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:   
-                  message:
-                    type: string
-
-  /sparql/{query}:
-    get:
-      description: executes the sparql query for query builder
-      parameters:
-        - name: query
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: page
-          in: query
-          description: Specifies the page number of the returned result to be displayed
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: Successfully returned the result of the query
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
+                      items:
+                        type: object'
+                        properties:
+                          text:
+                            type: string
+                          mentions:
+                            type: array
+                              items:
+                                types: string
+                    count:
+                      type: integer 
         '400':
           description: Invalid request
           content:
