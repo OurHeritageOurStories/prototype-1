@@ -12,7 +12,6 @@ export default function Search () {
   const [query, setQuery] = useState('')
   const [displayWiki, setDisplayWiki] = useState([{ s: '', p: '', o: '' }])
   const [displayNumber, setDisplayNumber] = useState([{ count: '??' }])
-  const [setOhosActive] = useState(false)
   const [initQuery, setInitQuery] = useState(false)
   const [searchParams] = useSearchParams()
 
@@ -38,18 +37,16 @@ export default function Search () {
     setInitQuery(true)
     const pageNumber = Math.max(1, pages)
     try {
-      fetch('http://localhost:8000/entities?page=' + pages)
+      fetch('http://138.68.138.8:8000/entities?page=' + pages)
         .then(response => response.json())
         .then(response => {
           setDisplayNumber(WBK.simplify.sparqlResults(response.count))
           setDisplayWiki(WBK.simplify.sparqlResults(response))
         })
-        .then(response => setOhosActive(true))
         .then(response => setPage(pageNumber))
     } catch (err) {
       console.log(err)
     }
-    console.log(displayWiki)
   }
 
   const search = () => {
