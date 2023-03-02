@@ -9,11 +9,6 @@ import {
 } from 'react-router-dom'
 
 const WBK = require('wikibase-sdk')
-const superagent = require('superagent')
-const wdk = WBK({
-  instance: 'http://cgdc-observatory.net',
-  sparqlEndpoint: 'http://cgdc-observatory.net/bigdata/namespace/undefined/sparql'
-})
 
 export default function Result () {
   const [displayWiki, setDisplayWiki] = useState([{ text: '', m: '' }])
