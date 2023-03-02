@@ -23,6 +23,7 @@ export default function Search () {
   
   var pages = searchParams.get('page')
   var keyword = searchParams.get('keyword')
+  keyword = keyword.replace(' ','|')
   if (isNaN(pages)) {
     pages = 1
   }
