@@ -4,7 +4,6 @@ import Parser from 'html-react-parser'
 import { Pagination } from '@material-ui/lab'
 import {
   useSearchParams,
-  useParams,
   Link
 } from 'react-router-dom'
 
@@ -19,11 +18,11 @@ export default function Search () {
   const [ohosActive, setOhosActive] = useState(false)
   const [discoveryActive, setDiscoveryActive] = useState(false)
   const [initQuery, setInitQuery] = useState(false)
-  const [searchParams, setSearchParams] = useSearchParams();
-  
+  const [searchParams] = useSearchParams()
+
   var pages = searchParams.get('page')
   var keyword = searchParams.get('keyword')
-  keyword = keyword.replace(' ','|')
+  keyword = keyword.replace(' ', '|')
   if (isNaN(pages)) {
     pages = 1
   }
@@ -46,9 +45,12 @@ export default function Search () {
     setInitQuery(true)
     const pageNumber = Math.max(1, pages)
     try {
-      fetch('http://localhost:8000/entities?page='+pages+"&keyword="+keyword)
+      fetch('http://localhost:8000/entities?page=' + pages + '&keyword=' + keyword)
         .then(response => response.json())
-        .then(response => {setDisplayNumber(WBK.simplify.sparqlResults(response['count'])), setDisplayWiki(WBK.simplify.sparqlResults(response))})
+        .then(response => {
+          setDisplayNumber(WBK.simplify.sparqlResults(response.count))
+          setDisplayWiki(WBK.simplify.sparqlResults(response))
+        })
         .then(response => setOhosActive(true))
         .then(response => setPage(pageNumber))
     } catch (err) {
@@ -174,7 +176,6 @@ export default function Search () {
         <h2 id='more'>{Parser('More from Discovery'.link('https://discovery.nationalarchives.gov.uk/results/r?_q=' + keyword.replaceAll(' ', '+')))}</h2>
       </div>
       <div className='navbar'>
-        <a onClick={() => window.location = '/'}>HOME</a><br />
         <a onClick={() => handleClick(0)}>OHOS</a><br />
         <a onClick={() => handleClick(1)}>TNA</a><br />
         <a onClick={() => handleClick(2)}>Other</a><br />

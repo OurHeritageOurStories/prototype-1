@@ -1,10 +1,8 @@
 import React, { useState } from 'react'
 import './App.css'
-import Parser from 'html-react-parser'
 import { Pagination } from '@material-ui/lab'
 import {
   useSearchParams,
-  useParams,
   Link
 } from 'react-router-dom'
 
@@ -14,11 +12,10 @@ export default function Search () {
   const [query, setQuery] = useState('')
   const [displayWiki, setDisplayWiki] = useState([{ s: '', p: '', o: '' }])
   const [displayNumber, setDisplayNumber] = useState([{ count: '??' }])
-  const [ohosActive, setOhosActive] = useState(false)
+  const [setOhosActive] = useState(false)
   const [initQuery, setInitQuery] = useState(false)
-  const [isNumber, setIsNumber] = useState(false)
-  const [searchParams, setSearchParams] = useSearchParams();
-  
+  const [searchParams] = useSearchParams()
+
   var pages = searchParams.get('page')
   if (isNaN(pages)) {
     pages = 1
@@ -41,9 +38,12 @@ export default function Search () {
     setInitQuery(true)
     const pageNumber = Math.max(1, pages)
     try {
-      fetch('http://localhost:8000/entities?page='+pages)
+      fetch('http://localhost:8000/entities?page=' + pages)
         .then(response => response.json())
-        .then(response => {setDisplayNumber(WBK.simplify.sparqlResults(response['count'])), setDisplayWiki(WBK.simplify.sparqlResults(response))})
+        .then(response => {
+          setDisplayNumber(WBK.simplify.sparqlResults(response.count))
+          setDisplayWiki(WBK.simplify.sparqlResults(response))
+        })
         .then(response => setOhosActive(true))
         .then(response => setPage(pageNumber))
     } catch (err) {

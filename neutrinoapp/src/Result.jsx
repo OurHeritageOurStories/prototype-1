@@ -13,7 +13,7 @@ const WBK = require('wikibase-sdk')
 export default function Result () {
   const [displayWiki, setDisplayWiki] = useState([{ text: '', m: '' }])
   const [displayNumber, setDisplayNumber] = useState([{ count: '??' }])
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams()
   var { id } = useParams()
   var pages = searchParams.get('page')
   if (isNaN(pages)) {
@@ -22,14 +22,14 @@ export default function Result () {
   const idParam = id
   id = 'https://en.wikipedia.org/wiki/' + id
   const [isActive, setIsActive] = useState(false)
-  const [isNumber, setIsNumber] = useState(false)
+  const [setIsNumber] = useState(false)
   const [isReady, setIsReady] = useState(false)
 
   const [page, setPage] = useState(1)
   const PER_PAGE = 10
 
   const count = Math.ceil(displayNumber[0].count / PER_PAGE)
-  
+
   const handleChange = (e, p) => {
     window.location = '/entity/' + idParam + '/?page=' + p
   }
@@ -40,7 +40,7 @@ export default function Result () {
     }
     const pageNumber = Math.max(1, pages)
     try {
-      fetch('http://localhost:8000/entities/' + idParam + '?page='+pages)
+      fetch('http://localhost:8000/entities/' + idParam + '?page=' + pages)
         .then(response => response.json())
         .then(response => {
           setIsActive(true)
@@ -61,7 +61,7 @@ export default function Result () {
             i.m = words
           }
           setDisplayWiki(simplifiedResults)
-          setDisplayNumber(WBK.simplify.sparqlResults(response['count']))
+          setDisplayNumber(WBK.simplify.sparqlResults(response.count))
           setIsReady(true)
           setPage(pageNumber)
           setIsActive(true)
