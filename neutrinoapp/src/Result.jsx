@@ -2,8 +2,8 @@ import React, { useState } from 'react'
 import './App.css'
 import Parser from 'html-react-parser'
 import { Pagination } from '@material-ui/lab'
-import usePagination from './Pagination'
 import {
+  useSearchParams,
   useParams,
   Link
 } from 'react-router-dom'
@@ -11,15 +11,19 @@ import {
 const WBK = require('wikibase-sdk')
 const superagent = require('superagent')
 const wdk = WBK({
-  instance: 'http://localhost:80',
-  sparqlEndpoint: 'http://localhost:9999/bigdata/namespace/undefined/sparql'
+  instance: 'http://cgdc-observatory.net',
+  sparqlEndpoint: 'http://cgdc-observatory.net/bigdata/namespace/undefined/sparql'
 })
 
 export default function Result () {
   const [displayWiki, setDisplayWiki] = useState([{ text: '', m: '' }])
   const [displayNumber, setDisplayNumber] = useState([{ count: '??' }])
+  const [searchParams, setSearchParams] = useSearchParams();
   var { id } = useParams()
-  var { pages } = useParams()
+  var pages = searchParams.get('page')
+  if (isNaN(pages)) {
+    pages = 1
+  }
   const idParam = id
   id = 'https://en.wikipedia.org/wiki/' + id
   const [isActive, setIsActive] = useState(false)
@@ -30,30 +34,18 @@ export default function Result () {
   const PER_PAGE = 10
 
   const count = Math.ceil(displayNumber[0].count / PER_PAGE)
-  const dataPagination = usePagination(displayWiki, PER_PAGE)
-
+  
   const handleChange = (e, p) => {
-    window.location = '/Result/' + idParam + '/' + p
+    window.location = '/entity/' + idParam + '/?page=' + p
   }
 
   const getData = async () => {
-    if (isNumber === false) {
-      getNumber()
-    }
-    console.log(displayNumber)
     if (isNaN(pages)) {
       pages = 1
     }
     const pageNumber = Math.max(1, pages)
-    const offset = (pageNumber - 1) * PER_PAGE
-    const sparql = 'SELECT DISTINCT ?text (group_concat(?mentioned;separator=" ") as ?m)  WHERE { ?s <http://tanc.manchester.ac.uk/mentions> ?mentioned. ?s <http://tanc.manchester.ac.uk/text> ?text. ?s <http://tanc.manchester.ac.uk/mentions> <' + id + '>.} GROUP BY ?text ORDER BY ?text LIMIT ' + PER_PAGE + ' OFFSET ' + offset
-    const url = wdk.sparqlQuery(sparql)
     try {
-      fetch('http://localhost:9090/SPARQL/sparql', {
-        method: 'POST',
-        headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: url })
-      })
+      fetch('http://localhost:8000/entities/' + idParam + '?page='+pages)
         .then(response => response.json())
         .then(response => {
           setIsActive(true)
@@ -64,7 +56,7 @@ export default function Result () {
               words[j] =
                 <Link
                   to={{
-                    pathname: `/Result/${words[j].split('/').pop()}/1`
+                    pathname: `/entity/${words[j].split('/').pop()}/`
                   }}
                   onClick={newPage}
                 >
@@ -74,25 +66,11 @@ export default function Result () {
             i.m = words
           }
           setDisplayWiki(simplifiedResults)
+          setDisplayNumber(WBK.simplify.sparqlResults(response['count']))
           setIsReady(true)
+          setPage(pageNumber)
+          setIsActive(true)
         })
-    } catch (err) {
-      console.log(err)
-    }
-  }
-
-  const getNumber = async () => {
-    const sparql = 'SELECT (count(?o) as ?count) WHERE { ?s <http://tanc.manchester.ac.uk/text> ?o. ?s <http://tanc.manchester.ac.uk/mentions> <' + id + '>.}'
-    const url = wdk.sparqlQuery(sparql)
-    try {
-      fetch('http://localhost:9090/SPARQL/sparql', {
-        method: 'POST',
-        headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: url })
-      })
-        .then(response => response.json())
-        .then(response => setDisplayNumber(WBK.simplify.sparqlResults(response)))
-        .then(response => setIsNumber(true))
     } catch (err) {
       console.log(err)
     }
@@ -123,7 +101,7 @@ export default function Result () {
         </div>
         <table className='table' style={{ visibility: isReady ? 'visible' : 'hidden' }}>
           {
-            dataPagination.currentData().map(item =>
+            displayWiki.map(item =>
               <tr key={item.id}>
                 <div>
                   <td className='left'><details><summary>{item.text.split(' ').slice(0, 150).join(' ')}</summary>{item.text.split(' ').slice(150).join(' ')}</details><br /><b>Source</b>: unknown</td>

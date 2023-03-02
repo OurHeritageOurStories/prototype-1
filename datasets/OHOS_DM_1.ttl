@@ -1,0 +1,66 @@
+@prefix dct: <http://purl.org/dc/terms/>.
+@prefix premis: <http://www.loc.gov/premis/rdf/v3/> .
+@prefix schema: <https://schema.org/> .
+@prefix ver:   <http://purl.org/linked-data/version#> .
+@prefix oa: <http://www.w3.org/ns/oa#> .
+@prefix rst: <https://id.loc.gov/vocabulary/preservation/relationshipSubType.html> .
+@prefix ohos: <http://example.com> .
+@prefix bibframe: <https://bibfra.me/view/lite/> .
+@prefix prov: <https://www.w3.org/TR/prov-o/> .
+
+ohos:NLS201030  a premis:IntellectualEntity ;
+	dct:type "cat:record-concept"^^xsd:string ;
+	dct:format "Digital"^^xsd:string .
+
+ohos:NLS201030 ver:currentversion ohos:NLS201030.1 . 
+ohos:NLS201030.1 prov:specialisationOf ohos:NLS201030 . 
+
+ohos:NLS201030.1  a premis:IntellectualEntity ;
+	dct:creator "National Library of Scotland"^^xsd:string ;
+	dct:rights "CC BY 04"^^xsd:string ;
+	dct:isPartOf "Rare Books in Gaelic"^^xsd:string ;
+	dct:title "1801?-Cronan"^^xsd:string ;
+	dct:description "Le Mairi n'ighin Alastair Ruaidh Mhic Leoid. Marbh-ran Ach-nabreac. Includes the poem: Marbh-rann air Sir Dughall Achanambreac. [Inverary] : Printed for and sold by the publisher, Inverary, [18--?]"^^xsd:string ;
+    	schema:version "1"^^xsd:integer ;
+	ohos:typology "Book"^^xsd:string ;
+	dct:format "JSON"^^xsd:string ;
+	dct:language "Scottish Gaelic"^^xsd:string ;
+	dct:source <https://digital.nls.uk/102666981> ;
+	dct:extent [
+		bibframe:extent "16pp"^^xsd:string
+	] .
+
+ohos:NLS201030.1 oa:hasTarget "Inveray"^^xsd:string ;
+	rdf:type "place"^^xsd:string ;
+	dct:creator "Valentina Vavassori"^^xsd:string ;
+	oa:sourcedate "2023-02-14T11:35:10Z"^^xsd:string ;
+	dct:created "2023-02-14 11:28:00.000"^^xsd:string .
+
+ohos:NLS201031  a premis:IntellectualEntity ;
+	dct:type "cat:record-concept"^^xsd:string ;
+	dct:format "Physical"^^xsd:string .
+
+ohos:NLS201031 ver:currentversion ohos:NLS201031.1 . 
+ohos:NLS201031.1 prov:specialisationOf ohos:NLS201031 .
+
+ohos:NLS201031.1  a premis:IntellectualEntity ;
+	dct:title "1801?-Cronan"^^xsd:string ;
+	dct:description "Le Mairi n'ighin Alastair Ruaidh Mhic Leoid. Marbh-ran Ach-nabreac. Includes the poem: Marbh-rann air Sir Dughall Achanambreac. [Inverary] : Printed for and sold by the publisher, Inverary, [18--?]"^^xsd:string ;
+    	schema:version "1"^^xsd:integer ;
+	prov:generatedAtTime "1801"^^xsd:string ;
+	ohos:typology "Book"^^xsd:string ;
+	dct:creator "Mary MacLeod"^^xsd:string ;
+	dct:language "Scottish Gaelic"^^xsd:string ;
+	schema:identifier "APS.1.204.168"^^xsd:string ;
+	dct:isPartOf "National Library of Scotland"^^xsd:string ;
+	dct:rights "out of copyright"^^xsd:string ;
+	ohos:mention [
+		rdf:type "Agent"^^xsd:string ;
+		dct:created "2023-02-14 11:28:00.000"^^xsd:string ;
+		dct:creator "Valentina Vavassori"^^xsd:string ;
+		ohos:identifier ohos:NLS201020 ;
+		ohos:sourceDate "2023-02-14 11:28:00.000"^^xsd:string ;
+	] ;
+	dct:extent [
+		bibframe:extent "16pp"^^xsd:string
+	] .

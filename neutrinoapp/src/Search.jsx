@@ -2,18 +2,13 @@ import React, { useState } from 'react'
 import './App.css'
 import Parser from 'html-react-parser'
 import { Pagination } from '@material-ui/lab'
-import usePagination from './Pagination'
 import {
+  useSearchParams,
   useParams,
   Link
 } from 'react-router-dom'
 
 const WBK = require('wikibase-sdk')
-const superagent = require('superagent')
-const wdk = WBK({
-  instance: 'http://cgdc-observatory.net',
-  sparqlEndpoint: 'http://cgdc-observatory.net/bigdata/namespace/undefined/sparql'
-})
 
 export default function Search () {
   const [query, setQuery] = useState('')
@@ -24,8 +19,10 @@ export default function Search () {
   const [ohosActive, setOhosActive] = useState(false)
   const [discoveryActive, setDiscoveryActive] = useState(false)
   const [initQuery, setInitQuery] = useState(false)
-  const [isNumber, setIsNumber] = useState(false)
-  var { pages } = useParams()
+  const [searchParams, setSearchParams] = useSearchParams();
+  
+  var pages = searchParams.get('page')
+  var keyword = searchParams.get('keyword')
   if (isNaN(pages)) {
     pages = 1
   }
@@ -33,80 +30,24 @@ export default function Search () {
   const [page, setPage] = useState(1)
   const PER_PAGE = 10
 
-  const count = Math.ceil(displayNumber[0].count / PER_PAGE)
-  const dataPagination = usePagination(displayWiki, PER_PAGE)
+  var count = Math.ceil(10 / PER_PAGE)
 
   const handleChange = (e, p) => {
-    window.location = '/' + p
+    window.location = '/?keyword=' + keyword + '&page=' + p
   }
 
   const onInputChange = (event) => {
     setQuery(event.target.value)
   }
 
-  const getNumber = async () => {
-    setIsNumber(true)
-    var sparqlQuery = query.replaceAll(' ', '_')
-    var sparql = ''
-    if (sparqlQuery.includes('_')) {
-      var sparqlQuery1 = sparqlQuery.split('_')[0]
-      var sparqlQuery2 = sparqlQuery.split('_')[1]
-      var sparqlQuery3 = sparqlQuery.split('_')[2]
-      var sparqlQuery4 = sparqlQuery.split('_')[3]
-      if (sparqlQuery4) {
-        sparql = 'prefix tanc: <http://tanc.manchester.ac.uk/> SELECT (count(*) as ?count) WHERE {SELECT DISTINCT ?o (count(?text) as ?count) WHERE { { ?s <http://tanc.manchester.ac.uk/text> ?text. ?s tanc:mentions ?o FILTER (regex(str(?o), "' + sparqlQuery1 + '", "i"))} UNION { ?s <http://tanc.manchester.ac.uk/text> ?text. ?s tanc:mentions ?o FILTER (regex(str(?o), "' + sparqlQuery2 + '", "i"))} UNION { ?s <http://tanc.manchester.ac.uk/text> ?text. ?s tanc:mentions ?o FILTER (regex(str(?o), "' + sparqlQuery3 + '", "i"))} UNION { ?s <http://tanc.manchester.ac.uk/text> ?text. ?s tanc:mentions ?o FILTER (regex(str(?o), "' + sparqlQuery4 + '", "i"))} } GROUP BY ?o ORDER BY DESC(?count)}'
-      } else if (sparqlQuery3) {
-        sparql = 'prefix tanc: <http://tanc.manchester.ac.uk/> SELECT (count(*) as ?count) WHERE {SELECT DISTINCT ?o (count(?text) as ?count) WHERE { { ?s <http://tanc.manchester.ac.uk/text> ?text. ?s tanc:mentions ?o FILTER (regex(str(?o), "' + sparqlQuery1 + '", "i"))} UNION { ?s <http://tanc.manchester.ac.uk/text> ?text. ?s tanc:mentions ?o FILTER (regex(str(?o), "' + sparqlQuery2 + '", "i"))} UNION { ?s <http://tanc.manchester.ac.uk/text> ?text. ?s tanc:mentions ?o FILTER (regex(str(?o), "' + sparqlQuery3 + '", "i"))} } GROUP BY ?o ORDER BY DESC(?count)}'
-      } else {
-        sparql = 'prefix tanc: <http://tanc.manchester.ac.uk/> SELECT (count(*) as ?count) WHERE {SELECT DISTINCT ?o (count(?text) as ?count) WHERE { { ?s <http://tanc.manchester.ac.uk/text> ?text. ?s tanc:mentions ?o FILTER (regex(str(?o), "' + sparqlQuery1 + '", "i"))} UNION { ?s <http://tanc.manchester.ac.uk/text> ?text. ?s tanc:mentions ?o FILTER (regex(str(?o), "' + sparqlQuery2 + '", "i"))} } GROUP BY ?o ORDER BY DESC(?count)}'
-      }
-    } else {
-      sparql = 'prefix tanc: <http://tanc.manchester.ac.uk/> SELECT (count(*) as ?count) WHERE {SELECT DISTINCT ?o (count(?text) as ?count) WHERE { ?s <http://tanc.manchester.ac.uk/text> ?text. ?s tanc:mentions ?o FILTER (regex(str(?o), "' + sparqlQuery + '", "i"))} GROUP BY ?o ORDER BY DESC(?count)}'
-    }
-    const url = wdk.sparqlQuery(sparql)
-    try {
-      const response = await superagent.get(url)
-      var simplifiedResults = WBK.simplify.sparqlResults(response.text)
-      setDisplayNumber(simplifiedResults)
-    } catch (err) {
-      console.log(err)
-    }
-  }
-
   const getData = async () => {
-    if (isNumber === false) {
-      getNumber()
-    }
+    count = Math.ceil(displayNumber[0].count / PER_PAGE)
     setInitQuery(true)
     const pageNumber = Math.max(1, pages)
-    const offset = (pageNumber - 1) * PER_PAGE
-    var sparqlQuery = query.replaceAll(' ', '_')
-    var sparql = ''
-    if (sparqlQuery.includes('_')) {
-      var sparqlQuery1 = sparqlQuery.split('_')[0]
-      var sparqlQuery2 = sparqlQuery.split('_')[1]
-      var sparqlQuery3 = sparqlQuery.split('_')[2]
-      var sparqlQuery4 = sparqlQuery.split('_')[3]
-      if (sparqlQuery4) {
-        sparql = 'prefix tanc: <http://tanc.manchester.ac.uk/> SELECT DISTINCT ?o (count(?text) as ?count) WHERE { { ?s <http://tanc.manchester.ac.uk/text> ?text. ?s tanc:mentions ?o FILTER (regex(str(?o), "' + sparqlQuery1 + '", "i"))} UNION { ?s <http://tanc.manchester.ac.uk/text> ?text. ?s tanc:mentions ?o FILTER (regex(str(?o), "' + sparqlQuery2 + '", "i"))} UNION { ?s <http://tanc.manchester.ac.uk/text> ?text. ?s tanc:mentions ?o FILTER (regex(str(?o), "' + sparqlQuery3 + '", "i"))} UNION { ?s <http://tanc.manchester.ac.uk/text> ?text. ?s tanc:mentions ?o FILTER (regex(str(?o), "' + sparqlQuery4 + '", "i"))} } GROUP BY ?o ORDER BY DESC(?count)'
-      } else if (sparqlQuery3) {
-        sparql = 'prefix tanc: <http://tanc.manchester.ac.uk/> SELECT DISTINCT ?o (count(?text) as ?count) WHERE { { ?s <http://tanc.manchester.ac.uk/text> ?text. ?s tanc:mentions ?o FILTER (regex(str(?o), "' + sparqlQuery1 + '", "i"))} UNION { ?s <http://tanc.manchester.ac.uk/text> ?text. ?s tanc:mentions ?o FILTER (regex(str(?o), "' + sparqlQuery2 + '", "i"))} UNION { ?s <http://tanc.manchester.ac.uk/text> ?text. ?s tanc:mentions ?o FILTER (regex(str(?o), "' + sparqlQuery3 + '", "i"))} } GROUP BY ?o ORDER BY DESC(?count)'
-      } else {
-        sparql = 'prefix tanc: <http://tanc.manchester.ac.uk/> SELECT DISTINCT ?o (count(?text) as ?count) WHERE { { ?s <http://tanc.manchester.ac.uk/text> ?text. ?s tanc:mentions ?o FILTER (regex(str(?o), "' + sparqlQuery1 + '", "i"))} UNION { ?s <http://tanc.manchester.ac.uk/text> ?text. ?s tanc:mentions ?o FILTER (regex(str(?o), "' + sparqlQuery2 + '", "i"))} } GROUP BY ?o ORDER BY DESC(?count)'
-      }
-    } else {
-      sparql = 'prefix tanc: <http://tanc.manchester.ac.uk/> SELECT DISTINCT ?o (count(?text) as ?count) WHERE { ?s <http://tanc.manchester.ac.uk/text> ?text. ?s tanc:mentions ?o FILTER (regex(str(?o), "' + sparqlQuery + '", "i"))} GROUP BY ?o ORDER BY DESC(?count)'
-    }
-    sparql = sparql + ' LIMIT ' + PER_PAGE + ' OFFSET ' + offset
-    var url = wdk.sparqlQuery(sparql)
     try {
-      fetch('http://localhost:9090/SPARQL/sparql', {
-        method: 'POST',
-        headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: url })
-      })
+      fetch('http://localhost:8000/entities?page='+pages+"&keyword="+keyword)
         .then(response => response.json())
-        .then(response => setDisplayWiki(WBK.simplify.sparqlResults(response)))
+        .then(response => {setDisplayNumber(WBK.simplify.sparqlResults(response['count'])), setDisplayWiki(WBK.simplify.sparqlResults(response))})
         .then(response => setOhosActive(true))
         .then(response => setPage(pageNumber))
     } catch (err) {
@@ -115,21 +56,20 @@ export default function Search () {
   }
 
   const search = () => {
-    setIsNumber(false)
     setDisplayNumber([{ count: '??' }])
-    pages = 1
-    if (isNumber === false) {
-      getNumber()
-    }
     getData()
 
-    fetch('http://localhost:9090/TNA/' + query)
+    fetch('http://localhost:8000/discovery?source=OTH&keyword=' + keyword)
       .then(response => response.json())
       .then(response => setDisplayTNA(response.records))
-    fetch('http://localhost:9090/OTH/' + query)
+    fetch('http://localhost:8000/discovery?source=TNA&keyword=' + keyword)
       .then(response => response.json())
       .then(response => setDisplayOther(response.records))
     setDiscoveryActive(true)
+  }
+
+  const searchRedirect = () => {
+    window.location = '/search?page=1&keyword=' + query
   }
 
   function handleClick (id) {
@@ -150,7 +90,7 @@ export default function Search () {
 
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
-      search()
+      searchRedirect()
     }
   }
 
@@ -159,7 +99,7 @@ export default function Search () {
   }
 
   if (initQuery === false) {
-    getData()
+    search()
   }
 
   return (
@@ -169,7 +109,7 @@ export default function Search () {
           <label>
             <input id='searchInput' type='text' onChange={onInputChange} onKeyDown={handleKeyPress} />
           </label>
-          <button className='button' type='button' onClick={search}> Search
+          <button className='button' type='button' onClick={searchRedirect}> Search
           </button>
         </form>
       </div>
@@ -178,11 +118,11 @@ export default function Search () {
         <table className='table'>
           <tbody>
             {
-              dataPagination.currentData().map((item, index) =>
+              displayWiki.map((item, index) =>
                 <tr key={index}>
                   <td>
                     <Link to={{
-                      pathname: `Result/${item.o.split('/').pop()}/1`
+                      pathname: `/entity/${item.o.split('/').pop()}/`
                     }}
                     >
                       {item.o.split('/').pop().replaceAll('_', ' ')}
@@ -230,13 +170,14 @@ export default function Search () {
           </tbody>
         </table>
         <br />
-        <h2 id='more'>{Parser('More from Discovery'.link('https://discovery.nationalarchives.gov.uk/results/r?_q=' + query.replaceAll(' ', '+')))}</h2>
+        <h2 id='more'>{Parser('More from Discovery'.link('https://discovery.nationalarchives.gov.uk/results/r?_q=' + keyword.replaceAll(' ', '+')))}</h2>
       </div>
       <div className='navbar'>
-        <a onClick={() => handleClick(0)} style={{ visibility: discoveryActive ? 'visible' : 'hidden' }}>OHOS</a><br />
-        <a onClick={() => handleClick(1)} style={{ visibility: discoveryActive ? 'visible' : 'hidden' }}>TNA</a><br />
-        <a onClick={() => handleClick(2)} style={{ visibility: discoveryActive ? 'visible' : 'hidden' }}>Other</a><br />
-        <a onClick={() => handleClick(3)} style={{ visibility: discoveryActive ? 'visible' : 'hidden' }}>More</a>
+        <a onClick={() => window.location = '/'}>HOME</a><br />
+        <a onClick={() => handleClick(0)}>OHOS</a><br />
+        <a onClick={() => handleClick(1)}>TNA</a><br />
+        <a onClick={() => handleClick(2)}>Other</a><br />
+        <a onClick={() => handleClick(3)}>More</a>
       </div>
     </div>
   )
