@@ -4,6 +4,7 @@ import {
   Route,
   Routes
 } from 'react-router-dom'
+import Home from './Home'
 import Search from './Search'
 import Result from './Result'
 
@@ -12,19 +13,15 @@ export default function App () {
     <Router basename='/'>
       <Routes>
         <Route
-          path='/:pages'
-          element={<Search />}
-        />
-        <Route
           path='/'
+          element={<Home />}
+        />
+        <Route
+          path='/search'
           element={<Search />}
         />
         <Route
-          path='Result/:id/:pages'
-          element={<Result />}
-        />
-        <Route
-          path='Result/:id'
+          path='/entity/:id'
           element={<Result />}
         />
       </Routes>

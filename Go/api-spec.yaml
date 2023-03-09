@@ -1,0 +1,315 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: OHOS Observatory API
+  description: API to get data for Observatory UI
+
+servers:
+  - url: https://cgdc-observatory.net/api/v1
+
+paths:
+  /discovery:
+    get:
+      description: Obtain list of catalouges from TNA/Other for the keyword
+      parameters:
+        - name: source
+          in: query
+          description: Choose the source
+          schema:
+            type: string
+        - name: keyword
+          in: query
+          description: Search the catalouges matching the keword
+          schema:
+            type: string
+          
+      responses:
+        '200':
+          description: Successfully returned the JSON from discovery API
+          content:
+            application/json:
+              schema:
+                type: object
+                items: 
+                  type: object
+                  properties:
+                    records:
+                      type: array
+                      items:
+                        types: object
+                        properties:
+                          altName:
+                            type: string
+                          places:
+                            type: array
+                            items:
+                              types: string
+                          corpBodies:
+                            type: array
+                            items:
+                              types: string
+                          taxonomies:
+                            type: array
+                            items:
+                              types: string
+                          formerReferenceDep:
+                            type: string
+                          formerReferencePro:
+                            type: string
+                          heldBy:
+                            type: array
+                            items:
+                              types: string
+                          context:
+                            type: string
+                          content:
+                            type: string
+                          urlParameters:
+                            type: string
+                          department:
+                            type: string
+                          note:
+                            type: string
+                          adminHistory:
+                            type: string
+                          arrangement:
+                            type: string
+                          mapDesignation:
+                            type: string
+                          mapScale:
+                            type: string
+                          physicalCondition:
+                            type: string
+                          catalogueLevel:
+                            type: string
+                          openingDate:
+                            type: string
+                          closureStatus:
+                            type: string
+                          closureType:
+                            type: string
+                          closureCode:
+                            type: string
+                          documentType:
+                            type: string
+                          coveringDates:
+                            type: string
+                          description:
+                            type: string
+                          endDate:
+                            type: string
+                          numEndDate:
+                            type: integer
+                          numStartDate:
+                            type: integer
+                          startDate:
+                            type: string
+                          id:
+                            type: string
+                          reference:
+                            type: string
+                          score:
+                            type: integer
+                          source:
+                            type: string
+                          title:
+                            type: string
+
+                    taxonomySubjects:
+                      type: array
+                      items:
+                        types: object
+                        properties:
+                          code:
+                            type: string
+                          count:
+                            type: integer
+                    timePeriods:
+                      type: array
+                      items:
+                        types: object
+                        properties:
+                          code:
+                            type: string
+                          count:
+                            type: integer
+                    departments:
+                      type: array
+                      items:
+                        types: object
+                        properties:
+                          code:
+                            type: string
+                          count:
+                            type: integer
+                    catalogueLevels:
+                      type: array
+                      items:
+                        types: object
+                        properties:
+                          code:
+                            type: string
+                          count:
+                            type: integer
+                    closureStatuses:
+                      type: array
+                      items:
+                        types: object
+                        properties:
+                          code:
+                            type: string
+                          count:
+                            type: integer
+                    sources:
+                      type: array
+                      items:
+                        types: object
+                        properties:
+                          code:
+                            type: string
+                          count:
+                            type: integer
+                    repositories:
+                      type: array
+                      items:
+                        types: object
+                        properties:
+                          code:
+                            type: string
+                          count:
+                            type: integer
+                    heldByReps:
+                      type: array
+                      items:
+                        types: object
+                        properties:
+                          code:
+                            type: string
+                          count:
+                            type: integer
+                    referenceFirstLetters:
+                      type: array
+                      items:
+                        types: object
+                        properties:
+                          code:
+                            type: string
+                          count:
+                            type: integer
+                    titleFirstLetters:
+                      type: array
+                      items:
+                        types: object
+                        properties:
+                          code:
+                            type: string
+                          count:
+                            type: integer
+                    count:
+                      type: integer
+                    nextBatchMark:
+                      type: string
+                
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object 
+                properties:           
+                  message:
+                    type: string
+
+  /entities:
+    get:
+      description: Returns a list of entities and their count 
+      parameters:
+        - name: keyword
+          in: query
+          description: Search the entities matching the keword
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: Specifies the page number of the entities to be displayed
+          schema:
+            type: integer
+
+      responses:
+        '200':
+          description: Successfully returned a list of entities
+          content:
+            application/json:
+              schema:
+                type: object
+                items: 
+                  type: object
+                  properties:
+                    entities:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          entity:
+                            type: string
+                          count:
+                            type: integer
+                    count:
+                      type: integer 
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:   
+                  message:
+                    type: string
+
+  /entities/{entity}:
+    get:
+      description: Returns a list of text containg entity and their related mentions
+      parameters:
+        - name: entity
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: Specifies the page number of the entities to be displayed
+          schema:
+            type: integer
+
+      responses:
+        '200':
+          description: Successfully returned a list of text containng the  entity
+          content:
+            application/json:
+              schema:
+                type: object
+                items: 
+                  type: object
+                  properties:
+                    text:
+                      type: array
+                      items:
+                        type: object'
+                        properties:
+                          text:
+                            type: string
+                          mentions:
+                            type: array
+                              items:
+                                types: string
+                    count:
+                      type: integer 
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:   
+                  message:
+                    type: string
