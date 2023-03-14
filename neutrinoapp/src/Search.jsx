@@ -7,14 +7,17 @@ import {
   Link
 } from 'react-router-dom'
 
-const WBK = require('wikibase-sdk')
+// const WBK = require('wikibase-sdk')
 
 export default function Search () {
+  var testvar = "testtt"
   const [query, setQuery] = useState('')
   const [displayTNA, setDisplayTNA] = useState([{ title: '' }])
   const [displayOther, setDisplayOther] = useState([{ title: '' }])
-  const [displayWiki, setDisplayWiki] = useState([{ s: '', p: '', o: '' }])
-  const [displayNumber, setDisplayNumber] = useState([{ count: '??' }])
+  // const [displayWiki, setDisplayWiki] = useState([{ s: '', p: '', o: '' }])
+  const [displayWiki, setDisplayWiki] = useState([{ title: { type: '', value: '' }, topics: { type: '', value: '' } }])
+  // const [displayNumber, setDisplayNumber] = useState([{ count: '??' }])
+  const [displayNumber, setDisplayNumber] = useState(0)
   const [ohosActive, setOhosActive] = useState(false)
   const [discoveryActive, setDiscoveryActive] = useState(false)
   const [initQuery, setInitQuery] = useState(false)
@@ -30,7 +33,8 @@ export default function Search () {
   const [page, setPage] = useState(1)
   const PER_PAGE = 10
 
-  var count = Math.ceil(10 / PER_PAGE)
+  //var count = Math.ceil(10 / PER_PAGE)
+  let count = 100
 
   const handleChange = (e, p) => {
     window.location = '/?keyword=' + keyword + '&page=' + p
@@ -41,31 +45,56 @@ export default function Search () {
   }
 
   const getData = async () => {
-    count = Math.ceil(displayNumber[0].count / PER_PAGE)
+    // count = Math.ceil(displayNumber/ PER_PAGE)
+    // count = Math.ceil(displayNumber.value / PER_PAGE)
+    // let thenexttext = displayNumber.value
     setInitQuery(true)
     const pageNumber = Math.max(1, pages)
+    //const pageNumber = 1
     try {
-      fetch('http://localhost:8000/entities?page=' + pages + '&keyword=' + keyword)
+      fetch('http://ec2-13-40-156-226.eu-west-2.compute.amazonaws.com:5000/api/movingImages?page=' + pages + '&keyword=' + keyword)
         .then(response => response.json())
+        // .then(response => response.results.bindings)
         .then(response => {
-          setDisplayNumber(WBK.simplify.sparqlResults(response.count))
-          setDisplayWiki(WBK.simplify.sparqlResults(response))
+          // setDisplayNumber(response.count.results.bindings.count)
+          // let testvar = response.count.results.bindings[0].count.value.toString
+          let testvar = parseInt(response.count.results.bindings[0].count.value)
+          setDisplayNumber(parseInt(response.count.results.bindings[0].count.value))
+          setDisplayWiki(response.results.bindings)
         })
         .then(response => setOhosActive(true))
+        // .then(response => response.json())
+        // .then(response => {
+        //   setDisplayNumber(WBK.simplify.sparqlResults(response.count))
+        //   setDisplayWiki(WBK.simplify.sparqlResults(response))
+        // })
+        // .then(response => setOhosActive(true))
         .then(response => setPage(pageNumber))
+        .then(response => {
+          count = Math.ceil(parseInt(response.count.bindings[0].count.value)/ PER_PAGE)
+        })
+        //.then(response => function(){
+         // let testvalue = displayNumber.value
+         // count = Math.ceil(displayNumber.value/PER_PAGE)
+         // count = Math.ceil(response.count.results.bindings[0].count.value)
+        // })
     } catch (err) {
       console.log(err)
     }
+    // count = Math.ceil(displayNumber[0].value / PER_PAGE)
+    // let testvalue = displayNumber.value
+    // count = Math.ceil(displayNumber.value/PER_PAGE)
   }
 
   const search = () => {
-    setDisplayNumber([{ count: '??' }])
+    setDisplayNumber([{ value: '??' }])
+    // setDisplayNumber([{value: '??'}])
     getData()
 
-    fetch('http://localhost:8000/discovery?source=OTH&keyword=' + keyword)
+    fetch('http://ec2-13-40-156-226.eu-west-2.compute.amazonaws.com:5000/api/discovery?source=OTH&keyword=' + keyword)
       .then(response => response.json())
       .then(response => setDisplayTNA(response.records))
-    fetch('http://localhost:8000/discovery?source=TNA&keyword=' + keyword)
+    fetch('http://ec2-13-40-156-226.eu-west-2.compute.amazonaws.com:5000/api/discovery?source=TNA&keyword=' + keyword)
       .then(response => response.json())
       .then(response => setDisplayOther(response.records))
     setDiscoveryActive(true)
@@ -117,7 +146,7 @@ export default function Search () {
         </form>
       </div>
       <div id='OHOS' style={{ visibility: ohosActive ? 'visible' : 'hidden' }}>
-        <h1>OHOS</h1>
+        <h1>OHOS</h1> {testvar}
         <table className='table'>
           <tbody>
             {
@@ -125,13 +154,12 @@ export default function Search () {
                 <tr key={index}>
                   <td>
                     <Link to={{
-                      pathname: `/entity/${item.o.split('/').pop()}/`
+                      pathname: `/entity/${item.title.value}/`
                     }}
                     >
-                      {item.o.split('/').pop().replaceAll('_', ' ')}
+                      {item.title.value}
                     </Link>{}
                   </td>
-                  <td>{item.count} results</td>
                 </tr>
               )
             }
