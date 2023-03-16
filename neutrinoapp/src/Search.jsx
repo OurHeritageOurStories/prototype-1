@@ -10,18 +10,19 @@ import {
 // const WBK = require('wikibase-sdk')
 
 export default function Search () {
-  var testvar = "testtt"
+  // var testvar = 'testtt'
   const [query, setQuery] = useState('')
   const [displayTNA, setDisplayTNA] = useState([{ title: '' }])
   const [displayOther, setDisplayOther] = useState([{ title: '' }])
   // const [displayWiki, setDisplayWiki] = useState([{ s: '', p: '', o: '' }])
   const [displayWiki, setDisplayWiki] = useState([{ title: { type: '', value: '' }, topics: { type: '', value: '' } }])
-  // const [displayNumber, setDisplayNumber] = useState([{ count: '??' }])
+  // const [displayNumber, setDisplayNumber] = useState({ value: '??' })
   const [displayNumber, setDisplayNumber] = useState(0)
   const [ohosActive, setOhosActive] = useState(false)
   const [discoveryActive, setDiscoveryActive] = useState(false)
   const [initQuery, setInitQuery] = useState(false)
   const [searchParams] = useSearchParams()
+  const [pageCount, setPageCount] = useState(1)
 
   var pages = searchParams.get('page')
   var keyword = searchParams.get('keyword')
@@ -31,10 +32,10 @@ export default function Search () {
   }
 
   const [page, setPage] = useState(1)
-  const PER_PAGE = 10
+  // const PER_PAGE = 10
 
-  //var count = Math.ceil(10 / PER_PAGE)
-  let count = 100
+  // var count = Math.ceil(10 / PER_PAGE)
+  // let count = 289
 
   const handleChange = (e, p) => {
     window.location = '/?keyword=' + keyword + '&page=' + p
@@ -44,52 +45,98 @@ export default function Search () {
     setQuery(event.target.value)
   }
 
-  const getData = async () => {
-    // count = Math.ceil(displayNumber/ PER_PAGE)
-    // count = Math.ceil(displayNumber.value / PER_PAGE)
-    // let thenexttext = displayNumber.value
+  /*
+  function updateCount (newCount) {
+    return new Promise((resolve, reject) => {
+      // count = newCount
+      count = 1212
+      console.log('dkjkkkkk')
+      resolve('yay')
+    })
+  }
+
+function getData() {
+  var getDataPromise = new Promise(function (resolve, reject) {
     setInitQuery(true)
     const pageNumber = Math.max(1, pages)
-    //const pageNumber = 1
     try {
       fetch('http://ec2-13-40-156-226.eu-west-2.compute.amazonaws.com:5000/api/movingImages?page=' + pages + '&keyword=' + keyword)
+        .then(testvar = 'yyyyy')
         .then(response => response.json())
-        // .then(response => response.results.bindings)
         .then(response => {
-          // setDisplayNumber(response.count.results.bindings.count)
-          // let testvar = response.count.results.bindings[0].count.value.toString
-          let testvar = parseInt(response.count.results.bindings[0].count.value)
-          setDisplayNumber(parseInt(response.count.results.bindings[0].count.value))
           setDisplayWiki(response.results.bindings)
         })
         .then(response => setOhosActive(true))
-        // .then(response => response.json())
-        // .then(response => {
-        //   setDisplayNumber(WBK.simplify.sparqlResults(response.count))
-        //   setDisplayWiki(WBK.simplify.sparqlResults(response))
-        // })
-        // .then(response => setOhosActive(true))
         .then(response => setPage(pageNumber))
+    } catch (err) {
+      console.log(err)
+    }
+    count = 69
+    resolve(999)
+    return pr
+  })
+  return getDataPromise
+} */
+  const getData = async () => {
+    // let countNew = 9999
+    // count = 99999
+    // console.log("alsdkjflaskdjf")
+    // count = Math.ceil(displayNumber.count/PER_PAGE)
+    setInitQuery(true)
+    const pageNumber = Math.max(1, pages)
+    try {
+      fetch('http://ec2-13-40-156-226.eu-west-2.compute.amazonaws.com:5000/api/movingImages?page=' + pages + '&keyword=' + keyword)
+        // .then(testvar = 'yyyyy')
+        .then(response => response.json())
         .then(response => {
-          count = Math.ceil(parseInt(response.count.bindings[0].count.value)/ PER_PAGE)
+          setPageCount(Math.ceil((parseInt(response.count.results.bindings[0].count.value))/10))
+          // setDisplayNumber(parseInt(response.count.results.bindings[0].count))
+          setDisplayWiki(response.results.bindings)
+          // countNew = parseInt(response.count.results.bindings[0].count)
+          // setPageCount(88)
         })
-        //.then(response => function(){
-         // let testvalue = displayNumber.value
-         // count = Math.ceil(displayNumber.value/PER_PAGE)
-         // count = Math.ceil(response.count.results.bindings[0].count.value)
+        .then(response => setOhosActive(true))
+        .then(response => setPage(pageNumber))
+        // .then(testvar == "ha")
+        // .then(updateCount(parseInt(response.count.results.bindings[0].count)))
+        // .then(testvar = "kdkdkdk")
+        // .then(updateCount(parseInt(response.count.results.bindings[0].count.value)))
+        // .then(response => {
+        //  //count = Math.ceil(parseInt(response.count.bindings[0].count.value)/ PER_PAGE)
+        //  count = 712
         // })
     } catch (err) {
       console.log(err)
     }
-    // count = Math.ceil(displayNumber[0].value / PER_PAGE)
-    // let testvalue = displayNumber.value
-    // count = Math.ceil(displayNumber.value/PER_PAGE)
+    // testvar = 'ldkaj'
+    // count = countNew
+    // count = 76
+    // setDisplayNumber(987)
+    //  .then(setPageCount(displayNumber))
+    // count = Math.ceil(displayNumber/PER_PAGE)
+    // setPageCount(Math.ceil(displayNumber/PER_PAGE))
+    // setPageCount(displayNumber)
+    // setPageCount(7)
   }
 
   const search = () => {
-    setDisplayNumber([{ value: '??' }])
-    // setDisplayNumber([{value: '??'}])
+    setDisplayNumber({ value: '??' })
     getData()
+    // let promise = this.getData();
+    // promise.then(
+    //  (result)=>{
+    //    count = result
+    //  }
+    // )
+
+    // getData().then(
+    //  function (result) {
+    //    count = 8764
+    //    testvar = 'bum'
+    //  }
+    // )
+    // testvar = 'silly'
+    // setDisplayNumber = 42069
 
     fetch('http://ec2-13-40-156-226.eu-west-2.compute.amazonaws.com:5000/api/discovery?source=OTH&keyword=' + keyword)
       .then(response => response.json())
@@ -141,12 +188,12 @@ export default function Search () {
           <label>
             <input id='searchInput' type='text' onChange={onInputChange} onKeyDown={handleKeyPress} />
           </label>
-          <button className='button' type='button' onClick={searchRedirect}> Search
+          <button className='button' type='button' onClick={searchRedirect}> Seaaarch
           </button>
         </form>
       </div>
       <div id='OHOS' style={{ visibility: ohosActive ? 'visible' : 'hidden' }}>
-        <h1>OHOS</h1> {testvar}
+        <h1>dafdsfsdfuuuuuu</h1> {pageCount}
         <table className='table'>
           <tbody>
             {
@@ -164,7 +211,7 @@ export default function Search () {
               )
             }
             <Pagination
-              count={count}
+              count={pageCount}
               size='large'
               page={page}
               variant='outlined'
@@ -175,7 +222,7 @@ export default function Search () {
         </table>
       </div>
       <div id='Discovery' className='Discovery' style={{ visibility: discoveryActive ? 'visible' : 'hidden' }}>
-        <h1>Discovery</h1>
+        <h1>Discoveasdfry</h1>
         <h2 id='TNA'>The National Archives</h2>
         <table className='table'>
           <tbody>
