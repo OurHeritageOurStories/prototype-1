@@ -19,7 +19,7 @@ export default function Search () {
   const [pageCount, setPageCount] = useState(1)
 
   var pages = searchParams.get('page')
-  var keyword = searchParams.get('keyword')
+  var keyword = searchParams.get('q')
   keyword = keyword.replace(' ', '|')
   if (isNaN(pages)) {
     pages = 1
@@ -29,7 +29,7 @@ export default function Search () {
   const PER_PAGE = 10
 
   const handleChange = (e, p) => {
-    window.location = '/search?keyword=' + keyword + '&page=' + p
+    window.location = '/search?q=' + keyword + '&page=' + p
   }
 
   const onInputChange = (event) => {
@@ -40,11 +40,11 @@ export default function Search () {
     setInitQuery(true)
     const pageNumber = Math.max(1, pages)
     try {
-      fetch('http://ec2-13-40-156-226.eu-west-2.compute.amazonaws.com:5000/api/movingImages?page=' + pages + '&keyword=' + keyword)
+      fetch('http://ec2-13-40-156-226.eu-west-2.compute.amazonaws.com:5000/api/movingImages?page=' + pages + '&q=' + keyword)
         .then(response => response.json())
         .then(response => {
-          setPageCount(Math.ceil((parseInt(response.count.results.bindings[0].count.value)) / PER_PAGE))
-          setDisplayWiki(response.results.bindings)
+          setPageCount(Math.ceil(response.total / PER_PAGE))
+          setDisplayWiki(response.items)
         })
         .then(response => setOhosActive(true))
         .then(response => setPage(pageNumber))
@@ -56,17 +56,17 @@ export default function Search () {
   const search = () => {
     getData()
 
-    fetch('http://ec2-13-40-156-226.eu-west-2.compute.amazonaws.com:5000/api/discovery?source=OTH&keyword=' + keyword)
+    fetch('http://ec2-13-40-156-226.eu-west-2.compute.amazonaws.com:5000/api/discovery?source=OTH&q=' + keyword)
       .then(response => response.json())
       .then(response => setDisplayTNA(response.records))
-    fetch('http://ec2-13-40-156-226.eu-west-2.compute.amazonaws.com:5000/api/discovery?source=TNA&keyword=' + keyword)
+    fetch('http://ec2-13-40-156-226.eu-west-2.compute.amazonaws.com:5000/api/discovery?source=TNA&q=' + keyword)
       .then(response => response.json())
       .then(response => setDisplayOther(response.records))
     setDiscoveryActive(true)
   }
 
   const searchRedirect = () => {
-    window.location = '/search?page=1&keyword=' + query
+    window.location = '/search?page=1&q=' + query
   }
 
   function handleClick (id) {

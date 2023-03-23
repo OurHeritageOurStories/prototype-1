@@ -50,7 +50,7 @@ export default function Search () {
   }
 
   const search = () => {
-    window.location = '/search?page=1&keyword=' + query
+    window.location = '/search?page=1&q=' + query
   }
 
   const handleKeyPress = (e) => {
