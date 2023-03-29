@@ -125,7 +125,7 @@ export default function Search () {
                 <tr key={index}>
                   <td>
                     <Link to={{
-                      pathname: `/entity/${Parser(item.Identifier.value.replaceAll('(filmRef)', ''))}/`
+                      pathname: `/entity/${Parser(item.Identifier.value)}/`
                     }}
                     >
                       {Parser(item.Title.value.replaceAll('(', '').replaceAll(')', ''))}
