@@ -44,7 +44,6 @@ export default function Search () {
         .then(response => {
           setPageCount(Math.ceil(response.total / PER_PAGE))
           setDisplayWiki(response.items)
-          console.log(response.items)
         })
         .then(response => setOhosActive(true))
         .then(response => setPage(pageNumber))
