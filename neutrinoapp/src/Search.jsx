@@ -39,7 +39,7 @@ export default function Search () {
     setInitQuery(true)
     const pageNumber = Math.max(1, pages)
     try {
-      fetch('http://localhost:9000/movingImages?page=' + pages + '&q=' + keyword)
+      fetch('http://ec2-13-40-156-226.eu-west-2.compute.amazonaws.com:5000/api/movingImages?page=' + pages + '&q=' + keyword)
         .then(response => response.json())
         .then(response => {
           setPageCount(Math.ceil(response.total / PER_PAGE))

@@ -19,7 +19,7 @@ export default function Result () {
   const getData = async () => {
     setIsActive(true)
     try {
-      fetch('http://localhost:9000/movingImagesEnt/entity/' + id)
+      fetch('http://ec2-13-40-156-226.eu-west-2.compute.amazonaws.com:5000/api/movingImagesEnt/entity/' + id)
         .then(response => response.json())
         .then(response => {
           setDisplayWiki(response.items)
