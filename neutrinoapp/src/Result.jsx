@@ -47,7 +47,7 @@ export default function Result () {
     <div className='App'>
       <div id='OHOS'>
         <div>
-            <h1 key={1}>
+            <h1>
             {Parser(displayWiki[0].Title.value.replaceAll('(', '').replaceAll(')', ''))}
             </h1>
         </div>
