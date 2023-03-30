@@ -53,13 +53,13 @@ export default function Search () {
   }
 
   const getDiscoveryTNA = async () => {
-    fetch('http://ec2-13-40-156-226.eu-west-2.compute.amazonaws.com:5000/api/discovery?source=OTH&q=glasgow')
+    fetch('http://ec2-13-40-156-226.eu-west-2.compute.amazonaws.com:5000/api/discovery?source=OTH&q=' + keyword)
       .then(response => response.json())
       .then(response => setDisplayTNA(response.records))
   }
 
   const getDiscoveryOTH = async () => {
-    fetch('http://ec2-13-40-156-226.eu-west-2.compute.amazonaws.com:5000/api/discovery?source=TNA&q=glasgow')
+    fetch('http://ec2-13-40-156-226.eu-west-2.compute.amazonaws.com:5000/api/discovery?source=TNA&q=' + keyword)
       .then(response => response.json())
       .then(response => setDisplayOther(response.records))
   }
