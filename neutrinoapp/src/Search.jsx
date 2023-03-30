@@ -7,22 +7,19 @@ import {
   Link
 } from 'react-router-dom'
 
-const WBK = require('wikibase-sdk')
-
 export default function Search () {
   const [query, setQuery] = useState('')
   const [displayTNA, setDisplayTNA] = useState([{ title: '' }])
   const [displayOther, setDisplayOther] = useState([{ title: '' }])
-  const [displayWiki, setDisplayWiki] = useState([{ s: '', p: '', o: '' }])
-  const [displayNumber, setDisplayNumber] = useState([{ count: '??' }])
+  const [displayWiki, setDisplayWiki] = useState([{ Identifier: { type: '', value: '' }, Title: { type: '', value: '' }, Topics: { type: '', value: '' }, Description: { type: '', value: '' }, URL: { type: '', datatype: '', value: '' } }])
   const [ohosActive, setOhosActive] = useState(false)
   const [discoveryActive, setDiscoveryActive] = useState(false)
   const [initQuery, setInitQuery] = useState(false)
   const [searchParams] = useSearchParams()
+  const [pageCount, setPageCount] = useState(1)
 
   var pages = searchParams.get('page')
-  var keyword = searchParams.get('keyword')
-  keyword = keyword.replace(' ', '|')
+  var keyword = searchParams.get('q')
   if (isNaN(pages)) {
     pages = 1
   }
@@ -30,10 +27,8 @@ export default function Search () {
   const [page, setPage] = useState(1)
   const PER_PAGE = 10
 
-  var count = Math.ceil(10 / PER_PAGE)
-
   const handleChange = (e, p) => {
-    window.location = '/?keyword=' + keyword + '&page=' + p
+    window.location = '/search?q=' + keyword + '&page=' + p
   }
 
   const onInputChange = (event) => {
@@ -41,15 +36,14 @@ export default function Search () {
   }
 
   const getData = async () => {
-    count = Math.ceil(displayNumber[0].count / PER_PAGE)
     setInitQuery(true)
     const pageNumber = Math.max(1, pages)
     try {
-      fetch('http://localhost:8000/entities?page=' + pages + '&keyword=' + keyword)
+      fetch('http://ec2-13-40-156-226.eu-west-2.compute.amazonaws.com:5000/api/movingImages?page=' + pages + '&q=' + keyword)
         .then(response => response.json())
         .then(response => {
-          setDisplayNumber(WBK.simplify.sparqlResults(response.count))
-          setDisplayWiki(WBK.simplify.sparqlResults(response))
+          setPageCount(Math.ceil(response.total / PER_PAGE))
+          setDisplayWiki(response.items)
         })
         .then(response => setOhosActive(true))
         .then(response => setPage(pageNumber))
@@ -58,21 +52,27 @@ export default function Search () {
     }
   }
 
-  const search = () => {
-    setDisplayNumber([{ count: '??' }])
-    getData()
-
-    fetch('http://localhost:8000/discovery?source=OTH&keyword=' + keyword)
+  const getDiscoveryTNA = async () => {
+    fetch('http://ec2-13-40-156-226.eu-west-2.compute.amazonaws.com:5000/api/discovery?source=OTH&q=' + keyword)
       .then(response => response.json())
       .then(response => setDisplayTNA(response.records))
-    fetch('http://localhost:8000/discovery?source=TNA&keyword=' + keyword)
+  }
+
+  const getDiscoveryOTH = async () => {
+    fetch('http://ec2-13-40-156-226.eu-west-2.compute.amazonaws.com:5000/api/discovery?source=TNA&q=' + keyword)
       .then(response => response.json())
       .then(response => setDisplayOther(response.records))
+  }
+
+  const search = async () => {
+    await getData()
+    await getDiscoveryTNA()
+    await getDiscoveryOTH()
     setDiscoveryActive(true)
   }
 
   const searchRedirect = () => {
-    window.location = '/search?page=1&keyword=' + query
+    window.location = '/search?page=1&q=' + query
   }
 
   function handleClick (id) {
@@ -125,26 +125,26 @@ export default function Search () {
                 <tr key={index}>
                   <td>
                     <Link to={{
-                      pathname: `/entity/${item.o.split('/').pop()}/`
+                      pathname: `/entity/${Parser(item.Identifier.value)}/`
                     }}
                     >
-                      {item.o.split('/').pop().replaceAll('_', ' ')}
+                      {Parser(item.Title.value.replaceAll('(', '').replaceAll(')', ''))}
                     </Link>{}
                   </td>
-                  <td>{item.count} results</td>
                 </tr>
               )
             }
-            <Pagination
-              count={count}
-              size='large'
-              page={page}
-              variant='outlined'
-              shape='rounded'
-              onChange={handleChange}
-            />
           </tbody>
         </table>
+
+        <Pagination
+          count={pageCount}
+          size='large'
+          page={page}
+          variant='outlined'
+          shape='rounded'
+          onChange={handleChange}
+        />
       </div>
       <div id='Discovery' className='Discovery' style={{ visibility: discoveryActive ? 'visible' : 'hidden' }}>
         <h1>Discovery</h1>

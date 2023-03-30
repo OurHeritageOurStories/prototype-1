@@ -37,7 +37,7 @@ export default function Search () {
     setInitQuery(true)
     const pageNumber = Math.max(1, pages)
     try {
-      fetch('http://138.68.138.8:8000/entities?page=' + pages)
+      fetch('http://ec2-13-40-156-226.eu-west-2.compute.amazonaws.com:5000/api/entities?page=' + pages)
         .then(response => response.json())
         .then(response => {
           setDisplayNumber(WBK.simplify.sparqlResults(response.count))
@@ -50,7 +50,7 @@ export default function Search () {
   }
 
   const search = () => {
-    window.location = '/search?page=1&keyword=' + query
+    window.location = '/search?page=1&q=' + query
   }
 
   const handleKeyPress = (e) => {

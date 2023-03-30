@@ -8,64 +8,23 @@ import {
   Link
 } from 'react-router-dom'
 
-const WBK = require('wikibase-sdk')
-
 export default function Result () {
-  const [displayWiki, setDisplayWiki] = useState([{ text: '', m: '' }])
-  const [displayNumber, setDisplayNumber] = useState([{ count: '??' }])
+  const [displayWiki, setDisplayWiki] = useState([{ Identifier: { type: '', value: '' }, Title: { type: '', value: '' }, Topics: { type: '', value: '' }, Description: { type: '', value: '' }, URL: { type: '', datatype: '', value: '' } }])
   const [searchParams] = useSearchParams()
   var { id } = useParams()
-  var pages = searchParams.get('page')
-  if (isNaN(pages)) {
-    pages = 1
-  }
   const idParam = id
-  id = 'https://en.wikipedia.org/wiki/' + id
   const [isActive, setIsActive] = useState(false)
-  const [setIsNumber] = useState(false)
   const [isReady, setIsReady] = useState(false)
 
-  const [page, setPage] = useState(1)
-  const PER_PAGE = 10
-
-  const count = Math.ceil(displayNumber[0].count / PER_PAGE)
-
-  const handleChange = (e, p) => {
-    window.location = '/entity/' + idParam + '/?page=' + p
-  }
-
   const getData = async () => {
-    if (isNaN(pages)) {
-      pages = 1
-    }
-    const pageNumber = Math.max(1, pages)
+    setIsActive(true)
     try {
-      fetch('http://localhost:8000/entities/' + idParam + '?page=' + pages)
+      fetch('http://ec2-13-40-156-226.eu-west-2.compute.amazonaws.com:5000/api/movingImagesEnt/entity/' + id)
         .then(response => response.json())
         .then(response => {
-          setIsActive(true)
-          var simplifiedResults = WBK.simplify.sparqlResults(response)
-          for (var i of simplifiedResults) {
-            var words = i.m.split(' ')
-            for (var j = 0; j < words.length; j++) {
-              words[j] =
-                <Link
-                  to={{
-                    pathname: `/entity/${words[j].split('/').pop()}/`
-                  }}
-                  onClick={newPage}
-                >
-                  {words[j].split('/').pop().replaceAll('_', ' ')}<br />
-                </Link>
-            }
-            i.m = words
-          }
-          setDisplayWiki(simplifiedResults)
-          setDisplayNumber(WBK.simplify.sparqlResults(response.count))
-          setIsReady(true)
-          setPage(pageNumber)
-          setIsActive(true)
+          setDisplayWiki(response.items)
         })
+        .then(response => setIsReady(true))
     } catch (err) {
       console.log(err)
     }
@@ -77,7 +36,6 @@ export default function Result () {
 
   const newPage = () => {
     setIsReady(false)
-    setIsNumber(false)
     setIsActive(false)
   }
 
@@ -89,30 +47,25 @@ export default function Result () {
     <div className='App'>
       <div id='OHOS'>
         <div>
-          {displayNumber.map(item =>
-            <h1 key={item.id}>
-              {Parser(id.split('/').pop().replaceAll('_', ' ').link(id))} ({item.count} results)
-            </h1>)}
+            <h1>
+            {Parser(displayWiki[0].Title.value.replaceAll('(', '').replaceAll(')', ''))}
+            </h1>
         </div>
         <table className='table' style={{ visibility: isReady ? 'visible' : 'hidden' }}>
           {
             displayWiki.map(item =>
               <tr key={item.id}>
                 <div>
-                  <td className='left'><details><summary>{item.text.split(' ').slice(0, 150).join(' ')}</summary>{item.text.split(' ').slice(150).join(' ')}</details><br /><b>Source</b>: unknown</td>
-                  <td className='right'>Related:<br /><div className='rightDiv' onClick={changeClass}>{item.m}</div></td>
+                  <td className='left'>{item.Description.value}<br /><b>Source</b>: <a href={item.URL.value}>{item.URL.value}</a></td>
+                  <td className='right'>Topics:<br /><div className='rightDiv'>{
+                    item.Topics.value.split("|||").map(itemTopic =>
+                      <p>{itemTopic}</p>
+                    )
+                  }</div></td>
                 </div>
               </tr>
             )
           }
-          <Pagination
-            count={count}
-            size='large'
-            page={page}
-            variant='outlined'
-            shape='rounded'
-            onChange={handleChange}
-          />
         </table>
       </div>
       <div className='navbar'>
