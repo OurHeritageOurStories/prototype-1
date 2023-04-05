@@ -72,23 +72,7 @@ export default function Search () {
   }
 
   const searchRedirect = () => {
-    window.location = '/search?page=1&q=' + query
-  }
-
-  function handleClick (id) {
-    const OHOS = document.getElementById('OHOS')
-    const TNA = document.getElementById('TNA')
-    const other = document.getElementById('other')
-    const more = document.getElementById('more')
-    if (id === 0 && discoveryActive === true) {
-      OHOS.scrollIntoView({ behavior: 'smooth' })
-    } else if (id === 1 && discoveryActive === true) {
-      TNA.scrollIntoView({ behavior: 'smooth' })
-    } else if (id === 2 && discoveryActive === true) {
-      other.scrollIntoView({ behavior: 'smooth' })
-    } else if (id === 3 && discoveryActive === true) {
-      more.scrollIntoView({ behavior: 'smooth' })
-    }
+    window.location = '/search?q=' + query + '&page=1'
   }
 
   const handleKeyPress = (e) => {
@@ -112,7 +96,7 @@ export default function Search () {
           <label>
             <input id='searchInput' type='text' onChange={onInputChange} onKeyDown={handleKeyPress} />
           </label>
-          <button className='button' type='button' onClick={searchRedirect}> Search
+          <button className='button' id='searchButton' type='button' onClick={searchRedirect}> Search
           </button>
         </form>
       </div>
@@ -136,7 +120,7 @@ export default function Search () {
             }
           </tbody>
         </table>
-
+        <div className='pagination'>
         <Pagination
           count={pageCount}
           size='large'
@@ -145,11 +129,12 @@ export default function Search () {
           shape='rounded'
           onChange={handleChange}
         />
+        </div>
       </div>
-      <div id='Discovery' className='Discovery' style={{ visibility: discoveryActive ? 'visible' : 'hidden' }}>
+      <div id='Discovery' style={{ visibility: discoveryActive ? 'visible' : 'hidden' }}>
         <h1>Discovery</h1>
         <h2 id='TNA'>The National Archives</h2>
-        <table className='table'>
+        <table className='table Discovery'>
           <tbody>
             {
               displayTNA.map((item, index) =>
@@ -161,7 +146,7 @@ export default function Search () {
           </tbody>
         </table>
         <h2 id='other'>Other Archives</h2>
-        <table className='table'>
+        <table className='table Discovery'>
           <tbody>
             {
               displayOther.map((item, index) =>
@@ -174,12 +159,6 @@ export default function Search () {
         </table>
         <br />
         <h2 id='more'>{Parser('More from Discovery'.link('https://discovery.nationalarchives.gov.uk/results/r?_q=' + keyword.replaceAll(' ', '+')))}</h2>
-      </div>
-      <div className='navbar'>
-        <a onClick={() => handleClick(0)}>OHOS</a><br />
-        <a onClick={() => handleClick(1)}>TNA</a><br />
-        <a onClick={() => handleClick(2)}>Other</a><br />
-        <a onClick={() => handleClick(3)}>More</a>
       </div>
     </div>
   )
