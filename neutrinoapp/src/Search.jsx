@@ -7,6 +7,18 @@ import {
   Link
 } from 'react-router-dom'
 
+import { makeStyles } from '@material-ui/core/styles';
+
+const useStyles = makeStyles(theme => ({
+  root: {
+    "& > *": {
+      marginTop: theme.spacing(2),
+      justifyContent:"center",
+      display:'flex'
+    }
+  }
+}));
+
 export default function Search () {
   const [query, setQuery] = useState('')
   const [displayTNA, setDisplayTNA] = useState([{ title: '' }])
@@ -39,7 +51,7 @@ export default function Search () {
     setInitQuery(true)
     const pageNumber = Math.max(1, pages)
     try {
-      fetch('http://ec2-13-40-156-226.eu-west-2.compute.amazonaws.com:5000/api/moving_images?page=' + pages + '&q=' + keyword)
+      fetch('http://ec2-13-40-156-226.eu-west-2.compute.amazonaws.com:5000/api/moving-images?page=' + pages + '&q=' + keyword)
         .then(response => response.json())
         .then(response => {
           setPageCount(Math.ceil(response.total / PER_PAGE))
@@ -89,6 +101,8 @@ export default function Search () {
     search()
   }
 
+  const classes = useStyles();
+
   return (
     <div className='App'>
       <div className='Search'>
@@ -120,8 +134,8 @@ export default function Search () {
             }
           </tbody>
         </table>
-        <div className='pagination'>
-        <Pagination
+        <div className={classes.root}>
+        <Pagination 
           count={pageCount}
           size='large'
           page={page}
