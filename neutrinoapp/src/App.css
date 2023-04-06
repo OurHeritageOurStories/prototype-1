@@ -44,8 +44,8 @@ button {
   }
 
   .pagination {
-    margin-left: 32%;
-    margin-right: 32%;
+    margin: auto;
+    width: 50%;
   }
   
   th, td, tr {
