@@ -1,5 +1,5 @@
 button {
-    padding: 1px;
+    padding: 2px;
     /*added color to button */
     background-color:rgba(77, 182, 172, 0.68);
   }
@@ -23,13 +23,29 @@ button {
   }
   table{
     border-spacing: 10px;
-    margin-left: auto; 
-    margin-right: auto;
+    margin-left: 14%; 
+    margin-right: 14%;
+    width: 72%;
   }
 
   .title{
     margin-left: 14%; 
     margin-right: 14%;
+  }
+
+  #searchInput{
+    width: 60%;
+    height: 20px;
+  }
+
+  #searchButton{
+    width: 10%;
+    font-size: 15px;
+  }
+
+  .pagination {
+    margin: auto;
+    width: 65%;
   }
   
   th, td, tr {
@@ -67,7 +83,10 @@ button {
     margin-left: auto; 
     margin-right: auto;
     line-height: 1.6;
-    width: 500px;
+  }
+
+  .Discovery{
+    width: 72%;
   }
   
   .left {
