@@ -7,17 +7,17 @@ import {
   Link
 } from 'react-router-dom'
 
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles'
 
 const useStyles = makeStyles(theme => ({
   root: {
-    "& > *": {
+    '& > *': {
       marginTop: theme.spacing(2),
-      justifyContent:"center",
-      display:'flex'
+      justifyContent: 'center',
+      display: 'flex'
     }
   }
-}));
+}))
 
 export default function Search () {
   const [query, setQuery] = useState('')
@@ -101,7 +101,7 @@ export default function Search () {
     search()
   }
 
-  const classes = useStyles();
+  const classes = useStyles()
 
   return (
     <div className='App'>
@@ -135,14 +135,14 @@ export default function Search () {
           </tbody>
         </table>
         <div className={classes.root}>
-        <Pagination 
-          count={pageCount}
-          size='large'
-          page={page}
-          variant='outlined'
-          shape='rounded'
-          onChange={handleChange}
-        />
+          <Pagination
+            count={pageCount}
+            size='large'
+            page={page}
+            variant='outlined'
+            shape='rounded'
+            onChange={handleChange}
+          />
         </div>
       </div>
       <div id='Discovery' style={{ visibility: discoveryActive ? 'visible' : 'hidden' }}>
