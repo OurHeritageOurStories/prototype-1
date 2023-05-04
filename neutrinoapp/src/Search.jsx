@@ -51,8 +51,14 @@ export default function Search () {
     setInitQuery(true)
     const pageNumber = Math.max(1, pages)
     try {
-      fetch('http://ec2-13-40-156-226.eu-west-2.compute.amazonaws.com:5000/api/moving-images?page=' + pages + '&q=' + keyword)
-        .then(response => response.json())
+      fetch('http://ec2-13-40-34-76.eu-west-2.compute.amazonaws.com:5000/api/moving-images?q=' + query + '&page=' + p)
+        .then(response => {
+          if (!response.ok) {
+            console.log(response)
+            window.location.href = '/error/?error='+response.status
+          }
+          return response.json();
+        })
         .then(response => {
           setPageCount(Math.ceil(response.total / PER_PAGE))
           setDisplayWiki(response.items)
@@ -65,14 +71,26 @@ export default function Search () {
   }
 
   const getDiscoveryTNA = async () => {
-    fetch('http://ec2-13-40-156-226.eu-west-2.compute.amazonaws.com:5000/api/discovery?source=TNA&q=' + keyword)
-      .then(response => response.json())
+    fetch('http://ec2-13-40-34-76.eu-west-2.compute.amazonaws.com:5000/api/discovery?source=TNA&q=' + keyword)
+      .then(response => {
+          if (!response.ok) {
+            console.log(response)
+            window.location.href = '/error/?error='+response.status
+          }
+          return response.json();
+        })
       .then(response => setDisplayTNA(response.records))
   }
 
   const getDiscoveryOTH = async () => {
-    fetch('http://ec2-13-40-156-226.eu-west-2.compute.amazonaws.com:5000/api/discovery?source=OTH&q=' + keyword)
-      .then(response => response.json())
+    fetch('http://ec2-13-40-34-76.eu-west-2.compute.amazonaws.com:5000/api/discovery?source=OTH&q=' + keyword)
+      .then(response => {
+          if (!response.ok) {
+            console.log(response)
+            window.location.href = '/error/?error='+response.status
+          }
+          return response.json();
+        })
       .then(response => setDisplayOther(response.records))
   }
 
