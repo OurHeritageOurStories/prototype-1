@@ -1,15 +1,23 @@
 import React, { useState } from 'react'
+import {
+  useSearchParams,
+  Link
+} from 'react-router-dom'
 import './App.css'
 
 export default function Search () {
-
+  const [searchParams] = useSearchParams()
+  var error = searchParams.get('error')
+  var text = searchParams.get('text')
+  var message = searchParams.get('message')
+ 
   return (
     <div className='App'>
       <div id='404'>
-        <h1>500</h1>
-        <h2>Internal Server Error</h2>
+        <h1>{error}</h1>
+        <h2>{text}</h2>
         <p>
-            The server encountered an unexpected condition that prevented it from fulfilling the request.
+            {message}
         </p>
       </div>
     </div>

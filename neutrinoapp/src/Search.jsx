@@ -50,16 +50,17 @@ export default function Search () {
   const getData = async () => {
     setInitQuery(true)
     const pageNumber = Math.max(1, pages)
+    var resp = ""
     try {
-      fetch('http://ec2-13-40-34-76.eu-west-2.compute.amazonaws.com:5000/api/moving-images?q=' + query + '&page=' + p)
+      fetch('http://ec2-13-40-34-76.eu-west-2.compute.amazonaws.com:5000/api/moving-images?q=' + keyword + '&page=' + pages)
         .then(response => {
-          if (!response.ok) {
-            console.log(response)
-            window.location.href = '/error/?error='+response.status
-          }
-          return response.json();
+          resp = response
+          return response.json()
         })
         .then(response => {
+          if (!resp.ok) {
+            window.location.href = '/error/?error='+resp.status+'&text='+resp.statusText+'&message='+response.message
+          }
           setPageCount(Math.ceil(response.total / PER_PAGE))
           setDisplayWiki(response.items)
         })
@@ -71,27 +72,33 @@ export default function Search () {
   }
 
   const getDiscoveryTNA = async () => {
+    var resp = ""
     fetch('http://ec2-13-40-34-76.eu-west-2.compute.amazonaws.com:5000/api/discovery?source=TNA&q=' + keyword)
       .then(response => {
-          if (!response.ok) {
-            console.log(response)
-            window.location.href = '/error/?error='+response.status
-          }
-          return response.json();
-        })
-      .then(response => setDisplayTNA(response.records))
+        resp = response
+        return response.json()
+      })
+      .then(response => {
+        if (!resp.ok) {
+          window.location.href = '/error/?error='+respTNA.status+'&text='+respTNA.statusText+'&message='+response.message
+        }
+        setDisplayTNA(response.records)
+      })
   }
 
   const getDiscoveryOTH = async () => {
+    var resp = ""
     fetch('http://ec2-13-40-34-76.eu-west-2.compute.amazonaws.com:5000/api/discovery?source=OTH&q=' + keyword)
       .then(response => {
-          if (!response.ok) {
-            console.log(response)
-            window.location.href = '/error/?error='+response.status
-          }
-          return response.json();
-        })
-      .then(response => setDisplayOther(response.records))
+        resp = response
+        return response.json()
+      })
+      .then(response => {
+        if (!resp.ok) {
+          window.location.href = '/error/?error='+respTNA.status+'&text='+respTNA.statusText+'&message='+response.message
+        }
+        setDisplayOther(response.records)
+      })
   }
 
   const search = async () => {
