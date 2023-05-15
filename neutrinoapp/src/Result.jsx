@@ -16,7 +16,7 @@ export default function Result () {
     setIsActive(true)
     try {
       var resp = ""
-      fetch('http://ec2-13-40-156-226.eu-west-2.compute.amazonaws.com:5000/api/moving-images-ent/entity/' + id)
+      fetch('http://ec2-13-40-34-76.eu-west-2.compute.amazonaws.com:5000/api/moving-images-ent/entity/' + id)
         .then(response => response.json())
         .then(response => {
           resp = response
