@@ -15,9 +15,17 @@ export default function Result () {
   const getData = async () => {
     setIsActive(true)
     try {
+      var resp = ""
       fetch('http://ec2-13-40-156-226.eu-west-2.compute.amazonaws.com:5000/api/moving-images-ent/entity/' + id)
         .then(response => response.json())
         .then(response => {
+          resp = response
+          return response.json()
+        })
+        .then(response => {
+          if (!resp.ok) {
+            window.location.href = '/error/?error='+resp.status+'&text='+resp.statusText+'&message='+response.message
+          }
           setDisplayWiki(response.items)
         })
         .then(response => setIsReady(true))

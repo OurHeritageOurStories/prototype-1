@@ -8,6 +8,7 @@ import Home from './Home'
 import Search from './Search'
 import Result from './Result'
 import Page_404 from './Page_404'
+import Page_Error from './Page_Error'
 
 export default function App () {
   return (
@@ -28,6 +29,10 @@ export default function App () {
         <Route
           path='/entity/:id'
           element={<Result />}
+        />
+        <Route
+          path='/error/'
+          element={<Page_Error />}
         />
       </Routes>
     </Router>
