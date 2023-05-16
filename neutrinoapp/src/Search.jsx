@@ -53,7 +53,6 @@ export default function Search () {
     try {
       var resp = ""
       fetch('http://ec2-13-40-34-76.eu-west-2.compute.amazonaws.com:5000/api/moving-images?page=' + pages + '&q=' + keyword)
-        .then(response => response.json())
         .then(response => {
           resp = response
           return response.json()
