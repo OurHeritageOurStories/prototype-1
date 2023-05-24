@@ -21,11 +21,13 @@ const useStyles = makeStyles(theme => ({
 
 export default function Search () {
   const [query, setQuery] = useState('')
+  const [message, setMessage] = useState('')
   const [displayTNA, setDisplayTNA] = useState([{ title: '' }])
   const [displayOther, setDisplayOther] = useState([{ title: '' }])
   const [displayWiki, setDisplayWiki] = useState([{ Identifier: { type: '', value: '' }, Title: { type: '', value: '' }, Topics: { type: '', value: '' }, Description: { type: '', value: '' }, URL: { type: '', datatype: '', value: '' } }])
   const [ohosActive, setOhosActive] = useState(false)
   const [discoveryActive, setDiscoveryActive] = useState(false)
+  const [error400, setError400] = useState(false)
   const [initQuery, setInitQuery] = useState(false)
   const [searchParams] = useSearchParams()
   const [pageCount, setPageCount] = useState(1)
@@ -58,8 +60,12 @@ export default function Search () {
           return response.json()
         })
         .then(response => {
-          if (!resp.ok) {
+          if (!resp.ok && resp.status != 400) {
             window.location.href = '/error/?error='+resp.status+'&text='+resp.statusText+'&message='+response.message
+          }
+          else if(resp.status == 400) {
+            setError400(true)
+            setMessage(response.message)
           }
           setPageCount(Math.ceil(response.total / PER_PAGE))
           setDisplayWiki(response.items)
@@ -143,7 +149,7 @@ export default function Search () {
         <h1>OHOS</h1>
         <table className='table'>
           <tbody>
-            {
+            { error400 ? message :
               displayWiki.map((item, index) =>
                 <tr key={index}>
                   <td>
@@ -160,14 +166,16 @@ export default function Search () {
           </tbody>
         </table>
         <div className={classes.root}>
-          <Pagination
+          { error400 ? <p></p> : displayWiki.length < 1 ? <p>No data found for {keyword}</p> : 
+          <Pagination 
             count={pageCount}
             size='large'
             page={page}
             variant='outlined'
             shape='rounded'
             onChange={handleChange}
-          />
+          /> 
+          }
         </div>
       </div>
       <div id='Discovery' style={{ visibility: discoveryActive ? 'visible' : 'hidden' }}>
